@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<title>Student's gradebook</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<div class="body">
+    <div class="nav">
+        <a href="{{ url_for('student_login') }}">log in</a>
+        <a href="{{ url_for('new_student') }}">new student</a>
+    </div>
+        {% block body %}{% endblock %}
+</div>

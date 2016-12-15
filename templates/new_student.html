@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+    <form action="{{ url_for('new_student') }}", method="post">
+        <dl>
+            <dt>First name:</dt>
+            <dd><input type="text" name="first_name"></dd>
+            <dt>Last name:</dt>
+            <dd><input type="text" name="last_name"></dd>
+            <dt>Group:</dt>
+            <dd><input type="text" name="group"></dd>
+            <dt>Username:</dt>
+            <dd><input type="text" name="username"></dd>
+            <dt>Password:</dt>
+            <dd><input type="password" name="password"></dd>
+            <dd><input type="submit" value="Add to database"></dd>
+        </dl>
+    </form>
+{% endblock %}
