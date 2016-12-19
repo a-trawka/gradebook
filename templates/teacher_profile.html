@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+<h1>Teacher's profile</h1>
+<dl>
+    <dt>First name:</dt>
+    <dd>{{ teacher.first_name }}</dd>
+    <dt>Last name:</dt>
+    <dd>{{ teacher.last_name }}</dd>
+    <dt>Specializations:</dt>
+    {% for spec in specializations %}
+        <dd>{{ spec.specialization.name }}</dd>
+    {% endfor %}
+    <dt>Username:</dt>
+    <dd>{{ teacher.username }}</dd>
+</dl>
+{% endblock %}

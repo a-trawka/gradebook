@@ -1,1 +1,4 @@
-h1          { font-size: 2em; color: slategrey; }
+h1                      { font-size: 2em; color: slategrey; }
+h2                      { color: slategrey; }
+.nav a                  { text-decoration: none; padding: 0.2em; }
+.nav a:visited          { color: lightslategray}

@@ -1,10 +1,19 @@
 <!DOCTYPE html>
 <title>Student's gradebook</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-<div class="body">
-    <div class="nav">
-        <a href="{{ url_for('student_login') }}">log in</a>
-        <a href="{{ url_for('new_student') }}">new student</a>
-    </div>
-        {% block body %}{% endblock %}
+
+<div class="nav">
+    <a href="{{ url_for('homepage') }}">Homepage </a>
+    {% if session['logged_in'] %}
+        {% if session['type'] == 'S' %}
+            <a href="{{ url_for('student_profile') }}">Profile</a>
+        {% elif session['type'] == 'T' %}
+            <a href="{{ url_for('teacher_profile') }}">Profile</a>
+        {% endif %}
+        <a href="{{ url_for('logout') }}">Log out </a>
+    {% else %}
+        <a href="{{ url_for('new_student') }}">New student </a>
+        <a href="{{ url_for('student_login') }}">Log in </a>
+    {% endif %}
 </div>
+    {% block body %}{% endblock %}

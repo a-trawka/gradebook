@@ -1,5 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
+    <br>
+    <a>If you are a teacher, go here: <a href="{{ url_for('teacher_login') }}"/> Login <a/>
     <form action="{{ url_for('student_login') }}", method=post>
         <dl>
             <dt>Username:</dt>
