@@ -1,4 +1,12 @@
 h1                      { font-size: 2em; color: slategrey; }
 h2                      { color: slategrey; }
-.nav a                  { text-decoration: none; padding: 0.2em; }
-.nav a:visited          { color: lightslategray}
+dt                      { font-weight: bold; }
+dd a:link               { text-decoration: none; }
+dd a:visited            { color: darkslategrey; }
+.grade                  { font-size: 1.1em; display: inline; }
+.nav                    { background-color: lightgray; }
+.nav a                  { text-decoration: none; margin-top: 0.2em; padding: 0.4em; border: solid steelblue 1px; background-color: white; }
+.nav a:link             { color: darkslategrey; }
+.nav a:visited          { color: darkslategrey; }
+.nav a:hover            { border-color: crimson; }
+.flash                  { background-color: lightcoral; border: solid black 0.5px; padding: 0.4em; margin-top: 10px; }

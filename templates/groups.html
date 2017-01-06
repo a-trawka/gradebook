@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+<h1>Groups</h1>
+<dl>
+    {% for gr in groups %}
+        <dd><a href="{{ url_for('group', group=gr.group) }}">Group {{ gr.group }}</a></dd>
+    {% endfor %}
+</dl>
+{% endblock %}

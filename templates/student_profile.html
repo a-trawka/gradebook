@@ -1,14 +1,27 @@
 {% extends "layout.html" %}
 {% block body %}
-<h1>Student's profile</h1>
-<dl>
-    <dt>First name:</dt>
-    <dd>{{ student.first_name }}</dd>
-    <dt>Last name:</dt>
-    <dd>{{ student.last_name }}</dd>
-    <dt>Group:</dt>
-    <dd>{{ student.group }}</dd>
-    <dt>Username:</dt>
-    <dd>{{ student.username }}</dd>
-</dl>
+    <h1>Student's profile</h1>
+    <dl>
+        <dt>First name:</dt>
+        <dd>{{ student.first_name }}</dd>
+        <dt>Last name:</dt>
+        <dd>{{ student.last_name }}</dd>
+        <dt>Group:</dt>
+        <dd>{{ student.group }}</dd>
+        <dt>Username:</dt>
+        <dd>{{ student.username }}</dd>
+    </dl>
+    <h2>Grades</h2>
+    {% for subject in subjects %}
+        <dl>
+            <dt>{{ subject.name }}</dt>
+            <dd>
+                {% for grade in grades %}
+                    {% if grade.subject.name == subject.name %}
+                        <div class="grade">{{ grade.grade }} , </div>
+                    {% endif %}
+                {% endfor %}
+            </dd>
+        </dl>
+    {% endfor %}
 {% endblock %}

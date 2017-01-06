@@ -6,7 +6,7 @@
       <Current>1</Current>
       <Visible>1</Visible>
     </schema>
-    <table id="3" parent="2" name="grades"/>
+    <table id="3" parent="2" name="grade"/>
     <table id="4" parent="2" name="student"/>
     <table id="5" parent="2" name="subject"/>
     <table id="6" parent="2" name="teacher"/>
@@ -39,7 +39,7 @@
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <foreign-key id="14" parent="3" name="#FAKE_grades_3">
+    <foreign-key id="14" parent="3" name="#FAKE_grade_3">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>student_id</ColNames>
       <Deferrable>1</Deferrable>
@@ -49,7 +49,7 @@
       <OnDelete>no-action</OnDelete>
       <OnUpdate>no-action</OnUpdate>
     </foreign-key>
-    <foreign-key id="15" parent="3" name="#FAKE_grades_2">
+    <foreign-key id="15" parent="3" name="#FAKE_grade_2">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>subject_id</ColNames>
       <Deferrable>1</Deferrable>
@@ -59,7 +59,7 @@
       <OnDelete>no-action</OnDelete>
       <OnUpdate>no-action</OnUpdate>
     </foreign-key>
-    <foreign-key id="16" parent="3" name="#FAKE_grades_1">
+    <foreign-key id="16" parent="3" name="#FAKE_grade_1">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>teacher_id</ColNames>
       <Deferrable>1</Deferrable>

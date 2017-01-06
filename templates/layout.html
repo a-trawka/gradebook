@@ -1,19 +1,24 @@
 <!DOCTYPE html>
-<title>Student's gradebook</title>
+<title>Gradebook</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 <div class="nav">
-    <a href="{{ url_for('homepage') }}">Homepage </a>
+    <a href="{{ url_for('homepage') }}">Home</a>
     {% if session['logged_in'] %}
         {% if session['type'] == 'S' %}
-            <a href="{{ url_for('student_profile') }}">Profile</a>
+            <a href="{{ url_for('student_profile') }}">Student</a>
         {% elif session['type'] == 'T' %}
-            <a href="{{ url_for('teacher_profile') }}">Profile</a>
+            <a href="{{ url_for('teacher_profile') }}">Teacher</a>
+            <a href="{{ url_for('new_student') }}">New student</a>
+            <a href="{{ url_for('groups') }}">Groups</a>
+            <a href="{{ url_for('add_grade') }}">Grade</a>
         {% endif %}
-        <a href="{{ url_for('logout') }}">Log out </a>
+        <a href="{{ url_for('logout') }}">Log out</a>
     {% else %}
-        <a href="{{ url_for('new_student') }}">New student </a>
-        <a href="{{ url_for('student_login') }}">Log in </a>
+        <a href="{{ url_for('student_login') }}">Log in</a>
     {% endif %}
 </div>
-    {% block body %}{% endblock %}
+{% for msg in get_flashed_messages() %}
+    <div class="flash">{{ msg }}</div>
+{%  endfor %}
+{% block body %}{% endblock %}
