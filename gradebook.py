@@ -35,8 +35,8 @@ class Teacher(BaseModel):
 
 class TeacherSubject(BaseModel):
     """TeacherSubject, in other words - specializations
-    One teacher may teach many subjects,
-    as well as one subject may be taught by many teachers.
+    One teacher can teach many subjects,
+    as well as one subject can be taught by many teachers.
     Many-to-many relationship model."""
     teacher = ForeignKeyField(Teacher, related_name='teachers')
     specialization = ForeignKeyField(Subject, related_name='specializations')
@@ -118,7 +118,11 @@ def new_student():
                     password=request.form['password'],
                 )
         except IntegrityError:
-            flash('Username already taken.')
+            flash('Username already taken')
+        except DatabaseError:
+            flash('An error occurred while creating a student')
+        else:
+            flash('Student added')
     return render_template('new_student.html')
 
 
@@ -184,19 +188,22 @@ def add_grade():
     return render_template('add_grade.html', students=students, subjects=subjects)
 
 
-# TODO: admin user
+# TODO: admin user/blueprint/Flask-Admin?
 # TODO: adding TeacherSubject specialization!
 # TODO: @admin_required wrapper
 @app.route('/new_teacher/', methods=['GET', 'POST'])
 def new_teacher():
     if request.method == 'POST' and request.form['username']:
         try:
-            teacher = Teacher.create(
-                first_name=request.form['first_name'],
-                last_name=request.form['last_name'],
-                username=request.form['username'],
-                password=request.form['password']
-                )
+            with db.transaction():
+                teacher = Teacher.create(
+                    first_name=request.form['first_name'],
+                    last_name=request.form['last_name'],
+                    username=request.form['username'],
+                    password=request.form['password']
+                    )
+        except IntegrityError:
+            flash('Username already taken')
         except DatabaseError:
             flash('An error occurred while creating a teacher')
         else:
@@ -224,15 +231,36 @@ def teacher_login():
 @app.route('/teacher_profile/')
 @teacher_required
 def teacher_profile():
-    teacher = get_current_user()
-    # or maybe: ...select().join(Teacher)...?
-    specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
-    return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
+    t = get_current_user()
+    specs = TeacherSubject.select().where(TeacherSubject.teacher == t)
+    return render_template('teacher_profile.html', teacher=t, specializations=specs)
 
 # TODO: @admin_required
-@app.route('/add_specialization/', methods=['GET', 'POST'])
-def add_specialization():
-    return render_template('add_specialization.html')
+@app.route('/teacher_profile/<username>/')
+def teacher_profile_foreign(username):
+    t = Teacher.get(Teacher.username == username)
+    specs = TeacherSubject.select().where(TeacherSubject.teacher == t)
+    return render_template('teacher_profile.html', teacher=t, specializations=specs)
+
+
+# TODO: @admin_required
+@app.route('/add_specialization/<username>/', methods=['GET', 'POST'])
+def add_specialization(username):
+    if request.method == 'POST':
+        try:
+            with db.transaction():
+                spec = TeacherSubject.create(   
+                    teacher=Teacher.get(Teacher.username == username),
+                    specialization=Subject.get(Subject.name == request.form['subject_select'])
+                    )
+        except DatabaseError as e:
+            print(e)
+            flash('An error occurred, try again')
+        else:
+            flash('Specialization added')
+    subs = Subject.select()
+    t = Teacher.get(Teacher.username == username)
+    return render_template('add_specialization.html', teacher=t, subjects=subs)
 
 @app.route('/groups/')
 @login_required
@@ -251,7 +279,7 @@ def group(group):
 @app.route('/logout/')
 @login_required
 def logout():
-    """Clears all session variables"""
+    """Clears all session elements."""
     for field in session:
         session[field] = None
     return redirect(url_for('homepage'))

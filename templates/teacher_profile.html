@@ -10,10 +10,12 @@
     {% for spec in specializations %}
         <dd>{{ spec.specialization.name }}</dd>
     {% endfor %}
-    <!-- TODO: admin required -->
-    <form action="{{ url_for('add_specialization') }}">
-        <input type="submit" value="+specialization">
-    </form>
+    <!-- TODO: if request.endpoint is teacher_profile_foreign -->
+    {% if request.endpoint == 'teacher_profile_foreign' %}
+        <form action="{{ url_for('add_specialization', username=teacher.username) }}">
+            <input type="submit" value="Add specialization">
+        </form>
+    {% endif %}
     <dt>Username:</dt>
     <dd>{{ teacher.username }}</dd>
 </dl>
