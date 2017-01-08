@@ -8,7 +8,7 @@ from flask import session
 from flask import flash
 from peewee import *
 
-from wrappers import login_required, guest_status_required, teacher_required, student_required
+import wrappers
 
 app = Flask(__name__)
 app.debug = True
@@ -61,11 +61,13 @@ class Grade(BaseModel):
 
 
 def create_tables():
+    """Create database tables from models, unless they already exist."""
     db.connect()
     db.create_tables([Student, Teacher, Subject, TeacherSubject, Grade], safe=True)
 
 
 def authorize_student(student):
+    """Enter session as a student."""
     session['logged_in'] = True
     session['user_id'] = student.id
     session['username'] = student.username
@@ -73,6 +75,7 @@ def authorize_student(student):
 
 
 def authorize_teacher(teacher):
+    """Enter session as a teacher."""
     session['logged_in'] = True
     session['user_id'] = teacher.id
     session['username'] = teacher.username
@@ -80,6 +83,7 @@ def authorize_teacher(teacher):
 
 
 def get_current_user():
+    """Returns an object of Student or Teacher class, whose credentials are currently saved in session."""
     if session['logged_in']:
         if session['type'] == 'S':
             return Student.get(Student.username == session['username'])
@@ -104,8 +108,10 @@ def homepage():
     return render_template('homepage.html')
 
 
+# TODO: make accessible for admin only
+# TODO: password encryption
 @app.route('/new_student/', methods=(['GET', 'POST']))
-@teacher_required
+@wrappers.teacher_required
 def new_student():
     if request.method == 'POST' and request.form['username']:
         try:
@@ -127,7 +133,7 @@ def new_student():
 
 
 @app.route('/student_login/', methods=['GET', 'POST'])
-@guest_status_required
+@wrappers.guest_status_required
 def student_login():
     if request.method == 'POST' and request.form['username']:
         try:
@@ -144,7 +150,7 @@ def student_login():
 
 
 @app.route('/student_profile/')
-@student_required
+@wrappers.student_required
 def student_profile():
     student = get_current_user()
     subjects = Subject.select()
@@ -154,7 +160,7 @@ def student_profile():
 
 # teacher should be able to access every student's profile information
 @app.route('/student_profile/<username>/')
-@teacher_required
+@wrappers.teacher_required
 def student_profile_foreign(username):
     student = Student.get(Student.username == username)
     subjects = Subject.select()
@@ -162,14 +168,11 @@ def student_profile_foreign(username):
     return render_template('student_profile.html', student=student, subjects=subjects, grades=grades)
 
 
+# TODO: validation of the form data
 @app.route('/add_grade/', methods=['GET', 'POST'])
-@teacher_required
+@wrappers.teacher_required
 def add_grade():
     if request.method == 'POST':
-        # TODO: validation of grade form
-        if request.form['student_select'] == 'default' or request.form['subject_select'] == 'default' or request.form['grade_select'] == 'default':
-            flash('Select valid options')
-            return redirect(url_for('homepage.html'))
         try:
             with db.transaction():
                 grade = Grade.create(
@@ -189,8 +192,7 @@ def add_grade():
 
 
 # TODO: admin user/blueprint/Flask-Admin?
-# TODO: adding TeacherSubject specialization!
-# TODO: @admin_required wrapper
+# TODO: @admin_required
 @app.route('/new_teacher/', methods=['GET', 'POST'])
 def new_teacher():
     if request.method == 'POST' and request.form['username']:
@@ -212,7 +214,7 @@ def new_teacher():
 
 
 @app.route('/teacher_login/', methods=['GET', 'POST'])
-@guest_status_required
+@wrappers.guest_status_required
 def teacher_login():
     if request.method == 'POST' and request.form['username']:
         try:
@@ -229,18 +231,19 @@ def teacher_login():
 
 
 @app.route('/teacher_profile/')
-@teacher_required
+@wrappers.teacher_required
 def teacher_profile():
-    t = get_current_user()
-    specs = TeacherSubject.select().where(TeacherSubject.teacher == t)
-    return render_template('teacher_profile.html', teacher=t, specializations=specs)
+    teacher = get_current_user()
+    specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
+    return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
+
 
 # TODO: @admin_required
 @app.route('/teacher_profile/<username>/')
 def teacher_profile_foreign(username):
-    t = Teacher.get(Teacher.username == username)
-    specs = TeacherSubject.select().where(TeacherSubject.teacher == t)
-    return render_template('teacher_profile.html', teacher=t, specializations=specs)
+    teacher = Teacher.get(Teacher.username == username)
+    specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
+    return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
 
 # TODO: @admin_required
@@ -249,12 +252,11 @@ def add_specialization(username):
     if request.method == 'POST':
         try:
             with db.transaction():
-                spec = TeacherSubject.create(   
+                spec = TeacherSubject.create(
                     teacher=Teacher.get(Teacher.username == username),
                     specialization=Subject.get(Subject.name == request.form['subject_select'])
                     )
-        except DatabaseError as e:
-            print(e)
+        except DatabaseError:
             flash('An error occurred, try again')
         else:
             flash('Specialization added')
@@ -262,22 +264,25 @@ def add_specialization(username):
     t = Teacher.get(Teacher.username == username)
     return render_template('add_specialization.html', teacher=t, subjects=subs)
 
+
+# TODO: viewing all groups should be accessible only by teacher
 @app.route('/groups/')
-@login_required
+@wrappers.login_required
 def groups():
-    distinct_groups = Student.select(Student.group).order_by(Student.group.asc())
-    return render_template('groups.html', groups=distinct_groups)
+    gr = Student.select(Student.group).order_by(Student.group.asc())
+    return render_template('groups.html', groups=gr)
 
 
-@app.route('/group/<int:group>/')
-@login_required
-def group(group):
+# TODO: student can only view his group
+@app.route('/group/<int:gr>/')
+@wrappers.login_required
+def group(gr):
     students = Student.select().where(Student.group == group)
-    return render_template('group.html', group=group, students=students)
+    return render_template('group.html', group=gr, students=students)
 
 
 @app.route('/logout/')
-@login_required
+@wrappers.login_required
 def logout():
     """Clears all session elements."""
     for field in session:

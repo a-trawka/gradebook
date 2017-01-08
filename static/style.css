@@ -4,7 +4,7 @@ dt                      { font-weight: bold; }
 dd a:link               { text-decoration: none; }
 dd a:visited            { color: darkslategrey; }
 .grade                  { font-size: 1.1em; display: inline; }
-.nav                    { background-color: lightgray; }
+.nav                    { background-color: lightgray; text-align: center; }
 .nav a                  { text-decoration: none; margin-top: 0.2em; padding: 0.4em; border: solid steelblue 1px; background-color: white; }
 .nav a:link             { color: darkslategrey; }
 .nav a:visited          { color: darkslategrey; }
