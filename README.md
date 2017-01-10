@@ -1,4 +1,2 @@
 # gradebook
-Gradebook web app - Flask + Peewee + SQLite3
-
-School gradebook
+school gradebook web app - Flask + Peewee + SQLite3
