@@ -8,5 +8,5 @@ dd a:visited            { color: darkslategrey; }
 .nav a                  { text-decoration: none; margin-top: 0.2em; padding: 0.4em; border: solid steelblue 1px; background-color: white; }
 .nav a:link             { color: darkslategrey; }
 .nav a:visited          { color: darkslategrey; }
-.nav a:hover            { border-color: crimson; }
-.flash                  { background-color: lightcoral; border: solid black 0.5px; padding: 0.4em; margin-top: 10px; }
+.nav a:hover            { color: black; }
+.flash                  { background-color: burlywood; border: solid darkslategrey 0.5px; padding: 0.4em; margin-top: 10px; }
