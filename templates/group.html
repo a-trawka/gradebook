@@ -1,9 +1,16 @@
 {% extends "layout.html" %}
 {% block body %}
     <h1>Group {{ group }}</h1>
-    <dt>
-        {% for student in students %}
-            <dd><a href="{{ url_for('student_profile_foreign', username=student.username) }}">{{ student.first_name }} {{ student.last_name }}</a></dd>
-        {% endfor %}
-    </dt>
+    <dl>
+        {% if request.endpoint == 'group_foreign' %}
+            {% for student in students %}
+                <dd><a href="{{ url_for('student_profile_foreign', username=student.username) }}">{{ student.first_name }} {{ student.last_name }}</a></dd>
+            {% endfor %}
+        {% endif %}
+        {% if request.endpoint == 'group' %}
+            {% for student in students %}
+                <dd>{{ student.first_name }} {{ student.last_name }}</dd>
+            {% endfor %}
+        {% endif %}
+    </dl>
 {% endblock %}

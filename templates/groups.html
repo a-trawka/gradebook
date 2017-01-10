@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-<h1>Groups</h1>
-<dl>
-    {% for gr in groups %}
-        <dd><a href="{{ url_for('group', group=gr.group) }}">Group {{ gr.group }}</a></dd>
-    {% endfor %}
-</dl>
+    <h1>Groups</h1>
+    <dl>
+      {% for g in student_groups %}
+          <dd><a href="{{ url_for('group_foreign', group_number=g.group) }}">Group {{ g.group }}</a></dd>
+      {% endfor %}
+    </dl>
 {% endblock %}
