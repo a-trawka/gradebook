@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+{% block body %}
+<form action="{{ url_for('admin_login') }}", method="post">
+    <dl>
+        <dt>ID:</dt>
+        <dd><input type="text" name="id"></dd>
+
+        <dt>PSWD:</dt>
+        <dd><input type="password" name="pswd"></dd>
+
+        <dd><input type="submit" value="OK"></dd>
+    </dl>
+</form>
+{% endblock %}

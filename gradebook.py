@@ -7,12 +7,11 @@ from flask import url_for
 from flask import session
 from flask import flash
 from peewee import *
-
-import wrappers
+from wrappers import login_required, guest_status_required, teacher_required, student_required, admin_required
 
 app = Flask(__name__)
-app.debug = True
-app.secret_key = 'gjk4*d/gaDc ;34d;Q'
+app.config['DEBUG'] = True
+app.config['SECRET_KEY'] = 'development'
 
 db = SqliteDatabase('gradebook.db')
 
@@ -82,6 +81,11 @@ def authorize_teacher(teacher):
     session['type'] = 'T'
 
 
+def authorize_admin():
+    session['logged_in'] = True
+    session['type'] = 'X'
+
+
 def get_current_user():
     """Returns an object of Student or Teacher class, whose credentials are currently saved in session."""
     if session['logged_in']:
@@ -111,7 +115,7 @@ def homepage():
 # TODO: make accessible for admin only
 # TODO: password encryption
 @app.route('/new_student/', methods=(['GET', 'POST']))
-@wrappers.teacher_required
+@teacher_required
 def new_student():
     if request.method == 'POST' and request.form['username']:
         try:
@@ -133,7 +137,7 @@ def new_student():
 
 
 @app.route('/student_login/', methods=['GET', 'POST'])
-@wrappers.guest_status_required
+@guest_status_required
 def student_login():
     if request.method == 'POST' and request.form['username']:
         try:
@@ -150,7 +154,7 @@ def student_login():
 
 
 @app.route('/student_profile/')
-@wrappers.student_required
+@student_required
 def student_profile():
     student = get_current_user()
     subjects = Subject.select()
@@ -160,7 +164,7 @@ def student_profile():
 
 # teacher should be able to access every student's profile information
 @app.route('/student_profile/<username>/')
-@wrappers.teacher_required
+@teacher_required
 def student_profile_foreign(username):
     student = Student.get(Student.username == username)
     subjects = Subject.select()
@@ -170,7 +174,7 @@ def student_profile_foreign(username):
 
 # TODO: validation of the form data
 @app.route('/add_grade/', methods=['GET', 'POST'])
-@wrappers.teacher_required
+@teacher_required
 def add_grade():
     if request.method == 'POST':
         try:
@@ -191,8 +195,7 @@ def add_grade():
     return render_template('add_grade.html', students=students, subjects=subjects)
 
 
-# TODO: admin user/blueprint/Flask-Admin?
-# TODO: @admin_required
+@admin_required
 @app.route('/new_teacher/', methods=['GET', 'POST'])
 def new_teacher():
     if request.method == 'POST' and request.form['username']:
@@ -214,7 +217,7 @@ def new_teacher():
 
 
 @app.route('/teacher_login/', methods=['GET', 'POST'])
-@wrappers.guest_status_required
+@guest_status_required
 def teacher_login():
     if request.method == 'POST' and request.form['username']:
         try:
@@ -231,14 +234,15 @@ def teacher_login():
 
 
 @app.route('/teacher_profile/')
-@wrappers.teacher_required
+@teacher_required
 def teacher_profile():
     teacher = get_current_user()
     specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
 
-# TODO: @admin_required
+# TODO: view with all teachers + let admin edit their info
+@admin_required
 @app.route('/teacher_profile/<username>/')
 def teacher_profile_foreign(username):
     teacher = Teacher.get(Teacher.username == username)
@@ -246,7 +250,8 @@ def teacher_profile_foreign(username):
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
 
-# TODO: @admin_required
+# TODO: improve adding specialization by admin
+@admin_required
 @app.route('/add_specialization/<username>/', methods=['GET', 'POST'])
 def add_specialization(username):
     if request.method == 'POST':
@@ -265,24 +270,46 @@ def add_specialization(username):
     return render_template('add_specialization.html', teacher=t, subjects=subs)
 
 
-# TODO: viewing all groups should be accessible only by teacher
 @app.route('/groups/')
-@wrappers.login_required
+@teacher_required
 def groups():
-    gr = Student.select(Student.group).order_by(Student.group.asc())
-    return render_template('groups.html', groups=gr)
+    student_groups = Student.select(Student.group).distinct().order_by(Student.group.asc())
+    return render_template('groups.html', student_groups=student_groups)
 
 
-# TODO: student can only view his group
-@app.route('/group/<int:gr>/')
-@wrappers.login_required
-def group(gr):
-    students = Student.select().where(Student.group == group)
-    return render_template('group.html', group=gr, students=students)
+@app.route('/group/')
+@student_required
+def group():
+    group_number = get_current_user().group
+    students = Student.select().where(Student.group == group_number)
+    return render_template('group.html', group=group_number, students=students)
+
+
+@app.route('/group/<int:group_number>/')
+@teacher_required
+def group_foreign(group_number):
+    students = Student.select().where(Student.group == group_number)
+    return render_template('group.html', group=group_number, students=students)
+
+
+@app.route('/admin_login/', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        if request.form['id'] == 'TEST_ADMIN' and request.form['pswd'] == 'TEST_PASSWORD':
+            authorize_admin()
+            return redirect(url_for('admin'))
+        else:
+            flash('NOPE')
+    return render_template('admin_login.html')
+
+
+@app.route('/admin/')
+def admin():
+    return render_template('admin.html')
 
 
 @app.route('/logout/')
-@wrappers.login_required
+@login_required
 def logout():
     """Clears all session elements."""
     for field in session:

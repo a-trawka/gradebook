@@ -3,10 +3,12 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 
 <div class="nav">
-    <a href="{{ url_for('homepage') }}">Home</a>
     {% if session['logged_in'] %}
-        {% if session['type'] == 'S' %}
+        {% if session['type'] == 'X' %}
+            <a href="{{ url_for('new_teacher') }}">New teacher</a>
+        {% elif session['type'] == 'S' %}
             <a href="{{ url_for('student_profile') }}">Student</a>
+            <a href="{{ url_for('group') }}">Group</a>
         {% elif session['type'] == 'T' %}
             <a href="{{ url_for('teacher_profile') }}">Teacher</a>
             <a href="{{ url_for('new_student') }}">New student</a>

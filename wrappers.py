@@ -42,3 +42,11 @@ def student_required(f):
     return func
 
 
+def admin_required(f):
+    """Wrapper for methods accessible only by admin"""
+    @wraps(f)
+    def func(*args, **kwargs):
+        if session.get('type') == 'X':
+            return f(*args, **kwargs)
+        return redirect(url_for('homepage'))
+    return func
