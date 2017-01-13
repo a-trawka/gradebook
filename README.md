@@ -1,8 +1,8 @@
 # gradebook
-school gradebook web app - Flask + Peewee + SQLite3
+school gradebook web app
 
-dependencies:
-  -python3
-  -flask
-  -SQLite3
-  -peewee ORM
+Required:
+  - **python3**
+  - **flask**
+  - **SQLite3**
+  - **peewee ORM**
