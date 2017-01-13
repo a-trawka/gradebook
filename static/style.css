@@ -1,9 +1,13 @@
-h1                      { font-size: 2em; color: slategrey; }
-h2                      { color: slategrey; }
-dt                      { font-weight: bold; }
+h1                      { font-size: 2em; color: slategrey; text-align: center; }
+h2                      { color: slategrey; text-align: center; }
+dt                      { font-weight: bold; margin-left: 40%; }
+dd                      { margin-left: 47%; }
 dd a:link               { text-decoration: none; }
 dd a:visited            { color: darkslategrey; }
+table                   { margin-left: 25%; padding: 0.6em; }
 .grade                  { font-size: 1.1em; display: inline; }
+.container              { width: 100%; }
+.container_inner        { margin: 0 auto; width: 50%; background-color: #f2f2f2; padding: 0.6em; }
 .nav                    { background-color: lightgray; text-align: center; }
 .nav a                  { text-decoration: none; margin-top: 0.2em; padding: 0.4em; border: solid steelblue 1px; background-color: white; }
 .nav a:link             { color: darkslategrey; }
