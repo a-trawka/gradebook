@@ -8,56 +8,13 @@ from flask import session
 from flask import flash
 from peewee import *
 from wrappers import login_required, guest_status_required, teacher_required, student_required, admin_required
+from db_model import *
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'development'
 
-db = SqliteDatabase('gradebook.db')
-
-
-class BaseModel(Model):
-    class Meta:
-        database = db
-
-
-class Subject(BaseModel):
-    name = CharField()
-
-
-class Teacher(BaseModel):
-    first_name = CharField()
-    last_name = CharField()
-    username = CharField(unique=True)
-    password = CharField()
-
-
-class TeacherSubject(BaseModel):
-    """TeacherSubject, in other words - specializations
-    One teacher can teach many subjects,
-    as well as one subject can be taught by many teachers.
-    Many-to-many relationship model."""
-    teacher = ForeignKeyField(Teacher, related_name='teachers')
-    specialization = ForeignKeyField(Subject, related_name='specializations')
-
-
-class Student(BaseModel):
-    first_name = CharField()
-    last_name = CharField()
-    group = CharField()
-    username = CharField(unique=True)
-    password = CharField()
-
-
-class Grade(BaseModel):
-    student = ForeignKeyField(Student)
-    subject = ForeignKeyField(Subject)
-    teacher = ForeignKeyField(Teacher)
-    grade = CharField()
-
-    class Meta:
-        order_by = ('student', 'subject',)
-
+db = get_db()
 
 def create_tables():
     """Create database tables from models, unless they already exist."""
@@ -293,6 +250,7 @@ def group_foreign(group_number):
 
 
 @app.route('/admin_login/', methods=['GET', 'POST'])
+@guest_status_required
 def admin_login():
     if request.method == 'POST':
         if request.form['id'] == 'TEST_ADMIN' and request.form['pswd'] == 'TEST_PASSWORD':
@@ -304,6 +262,7 @@ def admin_login():
 
 
 @app.route('/admin/')
+@admin_required
 def admin():
     return render_template('admin.html')
 
