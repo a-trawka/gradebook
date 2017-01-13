@@ -16,6 +16,7 @@ app.config['SECRET_KEY'] = 'development'
 
 db = get_db()
 
+# miscellaneous methods block begin
 def create_tables():
     """Create database tables from models, unless they already exist."""
     db.connect()
@@ -50,7 +51,7 @@ def get_current_user():
             return Student.get(Student.username == session['username'])
         else:
             return Teacher.get(Teacher.username == session['username'])
-
+# miscellaneous methods block end
 
 @app.before_request
 def before_request():
@@ -69,10 +70,9 @@ def homepage():
     return render_template('homepage.html')
 
 
-# TODO: make accessible for admin only
 # TODO: password encryption
 @app.route('/new_student/', methods=(['GET', 'POST']))
-@teacher_required
+@admin_required
 def new_student():
     if request.method == 'POST' and request.form['username']:
         try:
@@ -266,6 +266,18 @@ def admin_login():
 def admin():
     return render_template('admin.html')
 
+
+# TODO: let admin edit users' credentials
+@app.route('/admin_students/')
+def admin_students():
+    students = Student.select()
+    return render_template('admin_students.html', students=students)
+
+
+@app.route('/admin_teachers/')
+def admin_teachers():
+    teachers = Teacher.select()
+    return render_template('admin_teachers.html', teachers=teachers)
 
 @app.route('/logout/')
 @login_required
