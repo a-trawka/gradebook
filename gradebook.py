@@ -198,7 +198,6 @@ def teacher_profile():
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
 
-# TODO: view with all teachers + let admin edit their info
 @admin_required
 @app.route('/teacher_profile/<username>/')
 def teacher_profile_foreign(username):
@@ -207,7 +206,6 @@ def teacher_profile_foreign(username):
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
 
-# TODO: improve adding specialization by admin
 @admin_required
 @app.route('/add_specialization/<username>/', methods=['GET', 'POST'])
 def add_specialization(username):
@@ -253,7 +251,7 @@ def group_foreign(group_number):
 @guest_status_required
 def admin_login():
     if request.method == 'POST':
-        if request.form['id'] == 'TEST_ADMIN' and request.form['pswd'] == 'TEST_PASSWORD':
+        if request.form['id'] == 'TEST' and request.form['pswd'] == 'TEST':
             authorize_admin()
             return redirect(url_for('admin'))
         else:
