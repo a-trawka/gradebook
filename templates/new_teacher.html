@@ -3,19 +3,19 @@
 	<form action="{{ url_for('new_teacher') }}" method='post'>
 		<dl>
 			<dt>First name:</dt>
-			<dd><input type="text" name="first_name"></dd>
+			<input type="text" name="first_name">
 
 			<dt>Last name:</dt>
-			<dd><input type="text" name="last_name"></dd>
+			<input type="text" name="last_name">
 
 			<dt>Username:</dt>
-			<dd><input type="text" name="username"></dd>
+			<input type="text" name="username">
 
 			<dt>Password</dt>
-			<dd><input type="password" name="password"></dd>
-			
-			<br>
-			<dt><input type="submit" value="Submit"></dt>
+			<input type="password" name="password">
+
+			<br><br>
+			<input type="submit" value="Submit">
 		</dl>
 	</form>
 {% endblock %}

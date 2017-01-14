@@ -9,10 +9,10 @@
 				<dd>Username: {{ teacher.username }}</dd>
 			<dt>Subject:</dt>
 			<select name="subject_select">
-			<option value="default" selected disabled>Select specialization</option>
-			{% for subject in subjects %}
-				<option value="{{ subject.name }}">{{ subject.name }}</option>
-			{% endfor %}
+				<option value="default" selected disabled>Select specialization</option>
+				{% for subject in subjects %}
+					<option value="{{ subject.name }}">{{ subject.name }}</option>
+				{% endfor %}
 			</select>
 		</dl>
 		<input type="submit" value="Submit">

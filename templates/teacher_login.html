@@ -3,11 +3,11 @@
     <form action="{{ url_for('teacher_login') }}", method=post>
         <dl>
             <dt>Username:</dt>
-            <dd><input type="text" name="username"></dd>
+            <input type="text" name="username">
             <dt>Password:</dt>
-            <dd><input type="password" name="password"></dd>
-            <br>
-            <dd><input type="submit" value="Log in"></dd>
+            <input type="password" name="password">
+            <br><br>
+            <input type="submit" value="Log in">
         </dl>
     </form>
 {% endblock %}

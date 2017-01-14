@@ -11,9 +11,9 @@
         <dd>{{ spec.specialization.name }}</dd>
     {% endfor %}
     {% if request.endpoint == 'teacher_profile_foreign' %}
-        <form action="{{ url_for('add_specialization', username=teacher.username) }}">
-            <input type="submit" value="Add specialization">
-        </form>
+          <form action="{{ url_for('add_specialization', username=teacher.username) }}">
+              <input type="submit" value="Add specialization">
+          </form>
     {% endif %}
     <dt>Username:</dt>
     <dd>{{ teacher.username }}</dd>
