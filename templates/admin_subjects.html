@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+{% block body %}
+	<table>
+		<tr>
+			<th>Subject</th>
+			<th>Edit</th>
+			<th>Remove</th>		
+		</tr>
+	{% for subject in subjects %}
+		<tr>
+			<td>{{ subject.name }}</td>
+			<td></td>
+			<td></td>
+		</tr>
+	{% endfor %}
+	</table>	
+	<div class="universal">
+		<a href="{{ url_for('add_subject') }}">Add</a>
+	</div>
+{% endblock %}
