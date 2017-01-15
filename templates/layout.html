@@ -7,10 +7,9 @@
     <div class="nav">
         {% if session['logged_in'] %}
             {% if session['type'] == 'X' %}
-                <a href="{{ url_for('new_teacher') }}">New teacher</a>
-                <a href="{{ url_for('new_student') }}">New student</a>
                 <a href="{{ url_for('admin_teachers')}}">Teachers</a>
                 <a href="{{ url_for('admin_students')}}">Students</a>
+                <a href="{{ url_for('admin_subjects')}}">Subjects</a>
             {% elif session['type'] == 'S' %}
                 <a href="{{ url_for('student_profile') }}">Student</a>
                 <a href="{{ url_for('group') }}">Group</a>

@@ -2,16 +2,23 @@
 {% block body %}
   <table>
     <tr>
-      <th>First name</th>
-      <th>Last name</th>
-      <th>Username</th>
+      	<th>First name</th>
+      	<th>Last name</th>
+      	<th>Username</th>
+	<th>Edit</th>
+	<th>Remove</th>
     </tr>
     {% for teacher in teachers %}
       <tr>
         <td>{{ teacher.first_name }}</td>
         <td>{{ teacher.last_name }}</td>
         <td><a href={{ url_for('teacher_profile_foreign', username=teacher.username)}}>{{ teacher.username }}</a></td>
+	<td></td>
+	<td></td>
       </tr>
     {% endfor %}
   </table>
+	<div class="universal">
+		<a href="{{ url_for('new_teacher') }}">Add</a>
+	</div>
 {% endblock %}

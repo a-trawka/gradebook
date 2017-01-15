@@ -2,18 +2,25 @@
 {% block body %}
   <table>
     <tr>
-      <th>First name</th>
-      <th>Last name</th>
-      <th>Username</th>
-      <th>Group</th>
+      	<th>First name</th>
+      	<th>Last name</th>
+      	<th>Username</th>
+      	<th>Group</th>
+	<th>Edit</th>
+	<th>Remove</th>
     </tr>
     {% for student in students %}
     <tr>
-      <td>{{ student.first_name }}</td>
-      <td>{{ student.last_name }}</td>
-      <td>{{ student.username }}</td>
-      <td>{{ student.group }}</td
+      	<td>{{ student.first_name }}</td>
+      	<td>{{ student.last_name }}</td>
+      	<td><a href="{{ url_for('student_profile_foreign', username=student.username) }}">{{ student.username }}</a></td>
+      	<td>{{ student.group }}</td>
+	<td></td>
+	<td></td>
     </tr>
     {% endfor %}
   </table>
+	<div class="universal">
+		<a href="{{ url_for('new_student') }}">Add</a>
+	</div>
 {% endblock %}

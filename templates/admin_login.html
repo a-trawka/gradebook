@@ -3,12 +3,13 @@
 <form action="{{ url_for('admin_login') }}", method="post">
     <dl>
         <dt>ID:</dt>
-        <dd><input type="text" name="id"></dd>
+        <input type="text" name="id">
 
         <dt>PSWD:</dt>
-        <dd><input type="password" name="pswd"></dd>
+        <input type="password" name="pswd">
 
-        <dd><input type="submit" value="OK"></dd>
+	<br><br>
+        <input type="submit" value="OK">
     </dl>
 </form>
 {% endblock %}
