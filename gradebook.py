@@ -247,6 +247,20 @@ def group_foreign(group_number):
     return render_template('group.html', group=group_number, students=students)
 
 
+@app.route('/add_subject/', methods=['GET', 'POST'])
+@admin_required
+def add_subject():
+	if request.method == 'POST':
+		try:
+			with db.transaction():
+				subject = Subject.create(name=request.form['name'])
+		except DatabaseError:
+			flash('An error occured, try again.')
+		else:
+			flash('Subject added.')			
+	return render_template('add_subject.html')	
+
+
 @app.route('/admin_login/', methods=['GET', 'POST'])
 @guest_status_required
 def admin_login():
@@ -277,6 +291,13 @@ def admin_teachers():
     teachers = Teacher.select()
     return render_template('admin_teachers.html', teachers=teachers)
 
+
+@app.route('/admin_subjects')
+def admin_subjects():
+	subjects = Subject.select()
+	return render_template('admin_subjects.html', subjects=subjects)
+
+
 @app.route('/logout/')
 @login_required
 def logout():
@@ -288,6 +309,6 @@ def logout():
 
 if __name__ == '__main__':
     create_tables()
-    app.run()
-# TODO: fix admin_login CSS
-# TODO: make admin_students usernames hyperlinks to profiles
+    app.run(host='0.0.0.0')
+
+# TODO: admin_students,_teachers,_subjects add ADD at the bottom and fix <a> css
