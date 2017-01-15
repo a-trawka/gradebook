@@ -2,16 +2,17 @@ h1                      { font-size: 2em; color: slategrey; text-align: center; 
 h2                      { color: slategrey; text-align: center; }
 dt                      { font-weight: bold; margin-left: 40%; }
 dd                      { margin-left: 47%; }
-dd a:link               { text-decoration: none; }
-dd a:visited            { color: darkslategrey; }
+a:link                  { color: darkslategrey; text-decoration: none; }
+a:visited	        { color: darkslategrey; }
 table                   { margin-left: 25%; padding: 0.6em; }
 input                   { margin-left: 47%;}
 select                  { margin-left: 40%; padding: 0.1em; margin-bottom: 0.3em; width: 11em; }
 .container              { width: 100%; }
-.container_inner        { margin: 0 auto; width: 50%; background-color: #f2f2f2; margin-top: 1.5em; padding-bottom: 1em; }
+.container_inner        { margin: 0 auto; width: 50%; background-color: #f2f2f2; margin-top: 1.5em; padding-bottom: 2em; }
 .universal              { margin-left: 41%; }
+.universal a		{ font-size: 1.2em; }
 .grade                  { font-size: 1.1em; display: inline; }
-.nav                    { background-color: lightgray; text-align: center; }
+.nav                    { background-color: lightgray; text-align: center; margin-bottom: 2em; }
 .nav a                  { text-decoration: none; margin-top: 0.2em; padding: 0.4em; border: solid steelblue 1px; background-color: white; }
 .nav a:link             { color: darkslategrey; }
 .nav a:visited          { color: darkslategrey; }
