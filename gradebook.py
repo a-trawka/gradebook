@@ -7,7 +7,7 @@ from flask import url_for
 from flask import session
 from flask import flash
 from peewee import *
-from wrappers import login_required, guest_status_required, teacher_required, student_required, admin_required
+from wrappers import login_required, guest_status_required, teacher_required, teacher_or_admin_required, student_required, admin_required
 from db_model import *
 
 app = Flask(__name__)
@@ -121,7 +121,7 @@ def student_profile():
 
 # teacher should be able to access every student's profile information
 @app.route('/student_profile/<username>/')
-@teacher_required
+@teacher_or_admin_required
 def student_profile_foreign(username):
     student = Student.get(Student.username == username)
     subjects = Subject.select()
@@ -289,3 +289,5 @@ def logout():
 if __name__ == '__main__':
     create_tables()
     app.run()
+# TODO: fix admin_login CSS
+# TODO: make admin_students usernames hyperlinks to profiles

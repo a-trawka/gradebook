@@ -22,6 +22,16 @@ def guest_status_required(f):
     return func
 
 
+def student_required(f):
+    """Wrapper for methods accessible only by students"""
+    @wraps(f)
+    def func(*args, **kwargs):
+        if session.get('type') == 'S':
+            return f(*args, **kwargs)
+        return redirect(url_for('homepage'))
+    return func
+
+
 def teacher_required(f):
     """Wrapper for methods accessible only by teachers"""
     @wraps(f)
@@ -32,11 +42,11 @@ def teacher_required(f):
     return func
 
 
-def student_required(f):
-    """Wrapper for methods accessible only by students"""
+def teacher_or_admin_required(f):
+    """Wrapper for methods accessible by both admin and teacher"""
     @wraps(f)
     def func(*args, **kwargs):
-        if session.get('type') == 'S':
+        if session.get('type') == 'X' or session.get('type') == 'T':
             return f(*args, **kwargs)
         return redirect(url_for('homepage'))
     return func
