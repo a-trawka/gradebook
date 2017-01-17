@@ -198,8 +198,8 @@ def teacher_profile():
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
 
-@admin_required
 @app.route('/teacher_profile/<username>/')
+@admin_required
 def teacher_profile_foreign(username):
     teacher = Teacher.get(Teacher.username == username)
     specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
@@ -257,8 +257,8 @@ def add_subject():
 		except DatabaseError:
 			flash('An error occured, try again.')
 		else:
-			flash('Subject added.')			
-	return render_template('add_subject.html')	
+			flash('Subject added.')
+	return render_template('add_subject.html')
 
 
 @app.route('/admin_login/', methods=['GET', 'POST'])
