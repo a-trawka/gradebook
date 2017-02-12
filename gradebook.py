@@ -1,3 +1,4 @@
+"""Gradebook web application, by Adrian Trawka - https://github.com/daze6"""
 from flask import Flask
 from flask import g
 from flask import redirect
@@ -6,8 +7,14 @@ from flask import request
 from flask import url_for
 from flask import session
 from flask import flash
-from peewee import *
-from wrappers import login_required, guest_status_required, teacher_required, teacher_or_admin_required, student_required, admin_required
+from bcrypt import hashpw, gensalt
+from wrappers import login_required
+from wrappers import guest_status_required
+from wrappers import teacher_required
+from wrappers import teacher_or_admin_required
+from wrappers import student_required
+from wrappers import admin_required
+from custom_exceptions import WrongPasswordException
 from db_model import *
 
 app = Flask(__name__)
@@ -15,6 +22,7 @@ app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'development'
 
 db = get_db()
+
 
 # miscellaneous methods block begin
 def create_tables():
@@ -49,9 +57,11 @@ def get_current_user():
     if session['logged_in']:
         if session['type'] == 'S':
             return Student.get(Student.username == session['username'])
-        else:
+        elif session['type'] == 'T':
             return Teacher.get(Teacher.username == session['username'])
-# miscellaneous methods block end
+
+# end of miscellaneous methods block
+
 
 @app.before_request
 def before_request():
@@ -74,7 +84,7 @@ def homepage():
 @app.route('/new_student/', methods=(['GET', 'POST']))
 @admin_required
 def new_student():
-    if request.method == 'POST' and request.form['username']:
+    if request.method == 'POST' and request.form['username'] and len(request.form['password']) <= 70:
         try:
             with db.transaction():
                 student = Student.create(
@@ -82,7 +92,7 @@ def new_student():
                     last_name=request.form['last_name'],
                     group=request.form['group'],
                     username=request.form['username'],
-                    password=request.form['password'],
+                    password=hashpw(request.form['password'].encode('utf-8'), gensalt())
                 )
         except IntegrityError:
             flash('Username already taken')
@@ -98,10 +108,14 @@ def new_student():
 def student_login():
     if request.method == 'POST' and request.form['username']:
         try:
-            student = Student.get(
-                username=request.form['username'],
-                password=request.form['password']
-            )
+            student = Student.get(username=request.form['username'])
+            salt_password = student.password.encode('utf-8')
+            password_to_check = request.form['password'].encode('utf-8')
+            password = hashpw(password_to_check, salt_password)
+            if not password == salt_password:
+                raise WrongPasswordException('Wrong password')
+        except WrongPasswordException:
+            flash('Wrong password')
         except Student.DoesNotExist:
             flash('Wrong username or password')
         else:
@@ -155,15 +169,16 @@ def add_grade():
 @admin_required
 @app.route('/new_teacher/', methods=['GET', 'POST'])
 def new_teacher():
-    if request.method == 'POST' and request.form['username']:
+    if request.method == 'POST' and request.form['username'] and len(request.form['password']) <= 70:
         try:
             with db.transaction():
                 teacher = Teacher.create(
                     first_name=request.form['first_name'],
                     last_name=request.form['last_name'],
                     username=request.form['username'],
-                    password=request.form['password']
-                    )
+                    password=hashpw(request.form['password'].encode('utf-8'), gensalt())
+                    #password=request.form['password']
+                )
         except IntegrityError:
             flash('Username already taken')
         except DatabaseError:
@@ -178,10 +193,14 @@ def new_teacher():
 def teacher_login():
     if request.method == 'POST' and request.form['username']:
         try:
-            teacher = Teacher.get(
-                username=request.form['username'],
-                password=request.form['password']
-            )
+            teacher = Teacher.get(username=request.form['username'])
+            salt_password = teacher.password.encode('utf-8')
+            password_to_check = request.form['password'].encode('utf-8')
+            password = hashpw(password_to_check, salt_password)
+            if not password == salt_password:
+                raise WrongPasswordException()
+        except WrongPasswordException:
+            flash('Wrong password')
         except Teacher.DoesNotExist:
             flash('Wrong username or password')
         else:
@@ -215,7 +234,7 @@ def add_specialization(username):
                 spec = TeacherSubject.create(
                     teacher=Teacher.get(Teacher.username == username),
                     specialization=Subject.get(Subject.name == request.form['subject_select'])
-                    )
+                )
         except DatabaseError:
             flash('An error occurred, try again')
         else:
@@ -250,15 +269,15 @@ def group_foreign(group_number):
 @app.route('/add_subject/', methods=['GET', 'POST'])
 @admin_required
 def add_subject():
-	if request.method == 'POST':
-		try:
-			with db.transaction():
-				subject = Subject.create(name=request.form['name'])
-		except DatabaseError:
-			flash('An error occured, try again.')
-		else:
-			flash('Subject added.')
-	return render_template('add_subject.html')
+    if request.method == 'POST':
+        try:
+            with db.transaction():
+                subject = Subject.create(name=request.form['name'])
+        except DatabaseError:
+            flash('An error occured, try again.')
+        else:
+            flash('Subject added.')
+    return render_template('add_subject.html')
 
 
 @app.route('/admin_login/', methods=['GET', 'POST'])
@@ -294,8 +313,8 @@ def admin_teachers():
 
 @app.route('/admin_subjects')
 def admin_subjects():
-	subjects = Subject.select()
-	return render_template('admin_subjects.html', subjects=subjects)
+    subjects = Subject.select()
+    return render_template('admin_subjects.html', subjects=subjects)
 
 
 @app.route('/logout/')
@@ -310,5 +329,3 @@ def logout():
 if __name__ == '__main__':
     create_tables()
     app.run(host='0.0.0.0')
-
-# TODO: admin_students,_teachers,_subjects add ADD at the bottom and fix <a> css
