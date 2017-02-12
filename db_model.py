@@ -2,8 +2,10 @@ from peewee import *
 
 db = SqliteDatabase('gradebook.db')
 
+
 def get_db():
     return db
+
 
 class BaseModel(Model):
     class Meta:
