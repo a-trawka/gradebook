@@ -13,7 +13,7 @@
     <tr>
       	<td>{{ student.first_name }}</td>
       	<td>{{ student.last_name }}</td>
-      	<td><a href="{{ url_for('student_profile_foreign', username=student.username) }}">{{ student.username }}</a></td>
+      	<td><a href="{{ url_for('admin_blueprint.student_profile_foreign', username=student.username) }}">{{ student.username }}</a></td>
       	<td>{{ student.group }}</td>
 	<td></td>
 	<td></td>
@@ -21,6 +21,6 @@
     {% endfor %}
   </table>
 	<div class="universal">
-		<a href="{{ url_for('new_student') }}">Add</a>
+		<a href="{{ url_for('admin.blueprint.new_student') }}">Add</a>
 	</div>
 {% endblock %}
