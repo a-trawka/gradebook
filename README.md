@@ -6,5 +6,5 @@ Required:
   - **python3**
   - **SQLite3**
   - [**Flask**](http://flask.pocoo.org/)
-  - [**peewee ORM**](peewee-orm.com)
+  - [**peewee ORM**](http://peewee-orm.com)
   - [**bcrypt**](https://pypi.python.org/pypi/bcrypt/)
