@@ -4,6 +4,7 @@ Main goal: learn more and more about python backend
 
 Required:
   - **python3**
-  - [**Flask**](http://flask.pocoo.org/)
   - **SQLite3**
+  - [**Flask**](http://flask.pocoo.org/)
   - [**peewee ORM**](peewee-orm.com)
+  - [**bcrypt**](https://pypi.python.org/pypi/bcrypt/)
