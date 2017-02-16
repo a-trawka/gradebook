@@ -1,16 +1,16 @@
-h1                      { font-size: 2em; color: slategrey; text-align: center; }
-h2                      { color: slategrey; text-align: center; }
-dt                      { font-weight: bold; margin-left: 40%; }
+h1, h2                  { font-family: 'Open Sans', sans-serif; font-weight: 300; color: slategrey; text-align: center;}
+body                    { font-family: 'Lato', sans-serif; font-weight: 300; }
+dt                      { font-weight: 400; margin-left: 40%; }
 dd                      { margin-left: 47%; }
 a:link                  { color: darkslategrey; text-decoration: none; }
-a:visited	        { color: darkslategrey; }
+a:visited	              { color: darkslategrey; }
 table                   { margin-left: 25%; padding: 0.6em; }
 input                   { margin-left: 47%;}
 select                  { margin-left: 40%; padding: 0.1em; margin-bottom: 0.3em; width: 11em; }
 .container              { width: 100%; }
 .container_inner        { margin: 0 auto; width: 50%; background-color: #f2f2f2; margin-top: 1.5em; padding-bottom: 2em; }
 .universal              { margin-left: 41%; }
-.universal a		{ font-size: 1.2em; }
+.universal a	          { font-size: 1.2em; }
 .grade                  { font-size: 1.1em; display: inline; }
 .nav                    { background-color: lightgray; text-align: center; margin-bottom: 2em; }
 .nav a                  { text-decoration: none; margin-top: 0.2em; padding: 0.4em; border: solid steelblue 1px; background-color: white; }
