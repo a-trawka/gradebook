@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<title>Gradebook</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-
+<head>
+  <title>Gradebook</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:300,400,700|Open+Sans:300,400">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
 <div class="container">
   <div class="container_inner">
     <div class="nav">
         {% if session['logged_in'] %}
             {% if session['type'] == 'X' %}
-                <a href="{{ url_for('admin_teachers')}}">Teachers</a>
-                <a href="{{ url_for('admin_students')}}">Students</a>
-                <a href="{{ url_for('admin_subjects')}}">Subjects</a>
+                <a href="{{ url_for('admin_blueprint.admin_teachers')}}">Teachers</a>
+                <a href="{{ url_for('admin_blueprint.admin_students')}}">Students</a>
+                <a href="{{ url_for('admin_blueprint.admin_subjects')}}">Subjects</a>
             {% elif session['type'] == 'S' %}
                 <a href="{{ url_for('student_profile') }}">Student</a>
                 <a href="{{ url_for('group') }}">Group</a>

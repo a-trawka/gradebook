@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-<form action="{{ url_for('admin_login') }}", method="post">
+<form action="{{ url_for('admin_blueprint.admin_login') }}", method="post">
     <dl>
         <dt>ID:</dt>
         <input type="text" name="id">

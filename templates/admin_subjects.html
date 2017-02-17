@@ -4,7 +4,7 @@
 		<tr>
 			<th>Subject</th>
 			<th>Edit</th>
-			<th>Remove</th>		
+			<th>Remove</th>
 		</tr>
 	{% for subject in subjects %}
 		<tr>
@@ -13,8 +13,8 @@
 			<td></td>
 		</tr>
 	{% endfor %}
-	</table>	
+	</table>
 	<div class="universal">
-		<a href="{{ url_for('add_subject') }}">Add</a>
+		<a href="{{ url_for('admin_blueprint.add_subject') }}">Add</a>
 	</div>
 {% endblock %}
