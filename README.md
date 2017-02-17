@@ -1,8 +1,10 @@
 # gradebook
-school gradebook web app
+School gradebook web app by Adrian Trawka.
+Main goal: learn more and more about python backend
 
 Required:
   - **python3**
-  - **flask**
   - **SQLite3**
-  - **peewee ORM**
+  - [**Flask**](http://flask.pocoo.org/)
+  - [**peewee ORM**](http://peewee-orm.com)
+  - [**bcrypt**](https://pypi.python.org/pypi/bcrypt/)
