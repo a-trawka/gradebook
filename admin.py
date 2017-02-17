@@ -22,7 +22,6 @@ def admin_login():
         if request.form['id'] == 'test' and request.form['pswd'] == 'test':
             authorize_admin()
             return redirect(url_for('homepage'))
-            #return redirect(url_for('/'))
         else:
             flash('NOPE')
     return render_template('admin_login.html')
