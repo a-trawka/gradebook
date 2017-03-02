@@ -18,6 +18,7 @@ class Subject(BaseModel):
     def __repr__(self):
         return self.name
 
+
 class Teacher(BaseModel):
     first_name = CharField()
     last_name = CharField()
@@ -26,6 +27,7 @@ class Teacher(BaseModel):
 
     def __repr__(self):
         return '{} {} - {}'.format(self.first_name, self.last_name, self.username)
+
 
 class TeacherSubject(BaseModel):
     """TeacherSubject, in other words - specializations
@@ -38,6 +40,7 @@ class TeacherSubject(BaseModel):
     def __repr__(self):
         return '{} taught by {}'.format(repr(self.specialization), repr(self.teacher))
 
+
 class Student(BaseModel):
     first_name = CharField()
     last_name = CharField()
@@ -47,6 +50,7 @@ class Student(BaseModel):
 
     def __repr__(self):
         return '{} {}, group {} - {}'.format(self.first_name, self.last_name, self.group, self.username)
+
 
 class Grade(BaseModel):
     student = ForeignKeyField(Student)

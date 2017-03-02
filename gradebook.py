@@ -7,13 +7,12 @@ from flask import request
 from flask import url_for
 from flask import session
 from flask import flash
-from bcrypt import hashpw, gensalt
+from bcrypt import hashpw
 from wrappers import login_required
 from wrappers import guest_status_required
 from wrappers import teacher_required
 from wrappers import teacher_or_admin_required
 from wrappers import student_required
-from wrappers import admin_required
 from db_model import *
 from custom_exceptions import WrongPasswordException
 from admin import admin_blueprint
@@ -29,18 +28,15 @@ db = get_db()
 # begin of miscellaneous methods block
 def create_tables():
     """Create database tables from models, unless they already exist."""
-    # db.connect()
     db.create_tables([Student, Teacher, Subject, TeacherSubject, Grade], safe=True)
 
 def authorize_student(student):
-    """Enter session as a student."""
     session['logged_in'] = True
     session['user_id'] = student.id
     session['username'] = student.username
     session['type'] = 'S'
 
 def authorize_teacher(teacher):
-    """Enter session as a teacher."""
     session['logged_in'] = True
     session['user_id'] = teacher.id
     session['username'] = teacher.username
@@ -79,6 +75,7 @@ def student_login():
     if request.method == 'POST' and request.form['username']:
         try:
             student = Student.get(username=request.form['username'])
+            # adequate salt is stored in the password itself
             salt_password = student.password.encode('utf-8')
             password_to_check = request.form['password'].encode('utf-8')
             password = hashpw(password_to_check, salt_password)
@@ -101,18 +98,6 @@ def student_profile():
     subjects = Subject.select()
     grades = Grade.select().where(Grade.student == student)
     return render_template('student_profile.html', student=student, subjects=subjects, grades=grades)
-
-
-# TODO: split this into student_profile_teacher and admin/student_profile with bp
-#ADMIN_OFF
-# teacher should be able to access every student's information
-# @app.route('/student_profile/<username>/')
-# @teacher_or_admin_required
-# def student_profile_foreign(username):
-#     student = Student.get(Student.username == username)
-#     subjects = Subject.select()
-#     grades = Grade.select().where(Grade.student == student)
-#     return render_template('student_profile.html', student=student, subjects=subjects, grades=grades)
 
 
 @app.route('/student_profile/<username>')
@@ -153,6 +138,7 @@ def teacher_login():
     if request.method == 'POST' and request.form['username']:
         try:
             teacher = Teacher.get(username=request.form['username'])
+            # adequate salt is stored in the password itself
             salt_password = teacher.password.encode('utf-8')
             password_to_check = request.form['password'].encode('utf-8')
             password = hashpw(password_to_check, salt_password)
