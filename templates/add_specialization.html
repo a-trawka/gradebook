@@ -4,9 +4,8 @@
 	<form action="{{ url_for('admin_blueprint.add_specialization', username=teacher.username) }}" method="post">
 		<dl>
 			<dt>Teacher:</dt>
-				<dd>First name: {{ teacher.first_name }}</dd>
-				<dd>Last name: {{ teacher.last_name }}</dd>
-				<dd>Username: {{ teacher.username }}</dd>
+				<dd>{{ teacher.first_name }} {{ teacher.last_name }}</dd>
+				<dd>username: {{ teacher.username }}</dd>
 			<dt>Subject:</dt>
 			<select name="subject_select">
 				<option value="default" selected disabled>Select specialization</option>

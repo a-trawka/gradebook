@@ -12,7 +12,7 @@
       <tr>
         <td>{{ teacher.first_name }}</td>
         <td>{{ teacher.last_name }}</td>
-        <td><a href={{ url_for('admin_blueprint.teacher_profile_foreign', username=teacher.username)}}>{{ teacher.username }}</a></td>
+        <td><a href={{ url_for('admin_blueprint.teacher_profile', username=teacher.username)}}>{{ teacher.username }}</a></td>
 	<td></td>
 	<td></td>
       </tr>

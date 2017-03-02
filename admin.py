@@ -5,15 +5,19 @@ from flask import request
 from flask import url_for
 from flask import session
 from flask import flash
+from bcrypt import hashpw
+from bcrypt import gensalt
 from db_model import *
 from wrappers import guest_status_required
 from wrappers import admin_required
 
 admin_blueprint = Blueprint('admin_blueprint', 'admin_blueprint')
 
+
 def authorize_admin():
     session['logged_in'] = True
     session['type'] = 'X'
+
 
 @admin_blueprint.route('/login/', methods=['GET', 'POST'])
 @guest_status_required
@@ -25,6 +29,7 @@ def admin_login():
         else:
             flash('NOPE')
     return render_template('admin_login.html')
+
 
 @admin_blueprint.route('/new_student/', methods=(['GET', 'POST']))
 @admin_required
@@ -71,7 +76,7 @@ def new_teacher():
 
 @admin_blueprint.route('/teacher_profile/<username>/')
 @admin_required
-def teacher_profile_foreign(username):
+def teacher_profile(username):
     teacher = Teacher.get(Teacher.username == username)
     specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
@@ -83,7 +88,7 @@ def add_specialization(username):
     if request.method == 'POST':
         try:
             with db.transaction():
-                spec = TeacherSubject.create(
+                spec = TeacherSubject.get_or_create(
                     teacher=Teacher.get(Teacher.username == username),
                     specialization=Subject.get(Subject.name == request.form['subject_select'])
                 )
