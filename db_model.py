@@ -13,7 +13,7 @@ class BaseModel(Model):
 
 
 class Subject(BaseModel):
-    name = CharField()
+    name = CharField(unique=True)
 
     def __repr__(self):
         return self.name

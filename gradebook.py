@@ -1,4 +1,4 @@
-"""Gradebook web application, by Adrian Trawka - https://github.com/daze6"""
+"""Gradebook web application, by Adrian Trawka - https://github.com/a-trawka"""
 from flask import Flask
 from flask import g
 from flask import redirect
@@ -30,17 +30,20 @@ def create_tables():
     """Create database tables from models, unless they already exist."""
     db.create_tables([Student, Teacher, Subject, TeacherSubject, Grade], safe=True)
 
+
 def authorize_student(student):
     session['logged_in'] = True
     session['user_id'] = student.id
     session['username'] = student.username
     session['type'] = 'S'
 
+
 def authorize_teacher(teacher):
     session['logged_in'] = True
     session['user_id'] = teacher.id
     session['username'] = teacher.username
     session['type'] = 'T'
+
 
 def get_current_user():
     """Returns an object of Student or Teacher class, whose credentials are currently saved in session."""
@@ -56,6 +59,7 @@ def get_current_user():
 def before_request():
     g.db = db
     db.connect()
+
 
 @app.after_request
 def after_request(response):
@@ -126,7 +130,6 @@ def add_grade():
             flash('An error occurred while adding a grade')
         else:
             flash('Grade added')
-
     students = Student.select()
     subjects = Subject.select()
     return render_template('add_grade.html', students=students, subjects=subjects)

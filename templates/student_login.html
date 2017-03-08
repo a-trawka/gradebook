@@ -1,8 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
     <br>
+    <h1>Log in as a student</h1>
     <div class="universal">
-      <a href="{{ url_for('teacher_login') }}"/>Log in as a teacher</a>
+      <a href="{{ url_for('teacher_login') }}"/>If you are a teacher, click here</a>
     </div>
     <form action="{{ url_for('student_login') }}", method=post>
         <dl>
