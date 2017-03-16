@@ -80,10 +80,18 @@ def new_teacher():
 def teacher_profile(username):
     teacher = Teacher.get(Teacher.username == username)
     if request.method == 'POST':
-        if teacher.delete_instance():
-            flash('Teacher deleted.')
-            return redirect(url_for('admin_blueprint.admin_teachers'))
-        flash('Something went wrong while trying to delete a record.')
+        with db.transaction():
+            query = TeacherSubject.select(
+                TeacherSubject,
+                Teacher,
+                Subject).join(Teacher).switch(TeacherSubject).join(Subject).where(TeacherSubject.teacher == teacher)
+            for specialization in query:
+                if specialization.delete_instance():
+                    flash(teacher.username + '\'s specialization has been removed.')
+            if teacher.delete_instance():
+                flash(teacher.username + ' deleted.')
+                return redirect(url_for('admin_blueprint.admin_teachers'))
+            flash('Something went wrong while trying to delete a record.')
     specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
