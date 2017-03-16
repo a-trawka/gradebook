@@ -1,24 +1,36 @@
 {% extends "layout.html" %}
 {% block body %}
-  <table>
-    <tr>
-      	<th>First name</th>
-      	<th>Last name</th>
-      	<th>Username</th>
-	<th>Edit</th>
-	<th>Remove</th>
-    </tr>
-    {% for teacher in teachers %}
-      <tr>
-        <td>{{ teacher.first_name }}</td>
-        <td>{{ teacher.last_name }}</td>
-        <td><a href={{ url_for('admin_blueprint.teacher_profile', username=teacher.username)}}>{{ teacher.username }}</a></td>
-	<td></td>
-	<td></td>
-      </tr>
-    {% endfor %}
-  </table>
-	<div class="universal">
-		<a href="{{ url_for('admin_blueprint.new_teacher') }}">Add</a>
-	</div>
+    <table>
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Username</th>
+            <th>Edit</th>
+            <th>Remove</th>
+        </tr>
+        {% for teacher in teachers %}
+            <tr>
+                <td>{{ teacher.first_name }}</td>
+                <td>{{ teacher.last_name }}</td>
+                <td>
+                    <a href={{ url_for('admin_blueprint.teacher_profile', username=teacher.username) }}>{{ teacher.username }}</a>
+                </td>
+                <td>
+                    <!-- TODO: editing -->
+                    <form action="{{ url_for(   ) }}">
+                        <input type="submit" value="E"/>
+                    </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('admin_blueprint.teacher_profile', username=teacher.username) }}"
+                          method="POST">
+                        <input type="submit" value="X"/>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="universal">
+        <a href="{{ url_for('admin_blueprint.new_teacher') }}">Add</a>
+    </div>
 {% endblock %}

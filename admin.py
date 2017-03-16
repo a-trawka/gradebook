@@ -74,10 +74,16 @@ def new_teacher():
     return render_template('new_teacher.html')
 
 
-@admin_blueprint.route('/teacher_profile/<username>/')
+# method DELETE???
+@admin_blueprint.route('/teacher_profile/<username>/', methods=['GET', 'POST'])
 @admin_required
 def teacher_profile(username):
     teacher = Teacher.get(Teacher.username == username)
+    if request.method == 'POST':
+        if teacher.delete_instance():
+            flash('Teacher deleted.')
+            return redirect(url_for('admin_blueprint.admin_teachers'))
+        flash('Something went wrong while trying to delete a record.')
     specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
 
