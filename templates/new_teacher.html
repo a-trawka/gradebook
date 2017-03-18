@@ -1,21 +1,21 @@
 {% extends "layout.html" %}
 {% block body %}
-	<form action="{{ url_for('admin_blueprint.new_teacher') }}" method='post'>
-		<dl>
-			<dt>First name:</dt>
-			<input type="text" name="first_name">
+    <form action="{{ url_for('admin_blueprint.new_teacher') }}" method='post'>
+        <dl>
+            <dt>First name:</dt>
+            <input type="text" name="first_name">
 
-			<dt>Last name:</dt>
-			<input type="text" name="last_name">
+            <dt>Last name:</dt>
+            <input type="text" name="last_name">
 
-			<dt>Username:</dt>
-			<input type="text" name="username">
+            <dt>Username:</dt>
+            <input type="text" name="username">
 
-			<dt>Password</dt>
-			<input type="password" name="password">
+            <dt>Password</dt>
+            <input type="password" name="password">
 
-			<br><br>
-			<input type="submit" value="Submit">
-		</dl>
-	</form>
+            <br><br>
+            <input type="submit" value="Submit">
+        </dl>
+    </form>
 {% endblock %}

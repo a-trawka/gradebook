@@ -16,8 +16,7 @@
                     <a href={{ url_for('admin_blueprint.teacher_profile', username=teacher.username) }}>{{ teacher.username }}</a>
                 </td>
                 <td>
-                    <!-- TODO: editing -->
-                    <form action="{{ url_for(   ) }}">
+                    <form action=" {{ url_for('admin_blueprint.teacher_edit', username=teacher.username) }} ">
                         <input type="submit" value="E"/>
                     </form>
                 </td>

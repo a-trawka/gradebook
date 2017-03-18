@@ -5,6 +5,9 @@ from flask import request
 from flask import url_for
 from flask import session
 from flask import flash
+from flask_wtf import FlaskForm
+from wtforms import StringField
+from wtforms.validators import InputRequired
 from bcrypt import hashpw
 from bcrypt import gensalt
 from db_model import *
@@ -74,7 +77,6 @@ def new_teacher():
     return render_template('new_teacher.html')
 
 
-# method DELETE???
 @admin_blueprint.route('/teacher_profile/<username>/', methods=['GET', 'POST'])
 @admin_required
 def teacher_profile(username):
@@ -94,6 +96,30 @@ def teacher_profile(username):
             flash('Something went wrong while trying to delete a record.')
     specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
+
+
+##################
+class TeacherEditForm(FlaskForm):
+    first_name = StringField('first_name', validators=[InputRequired()])
+    last_name = StringField('last_name', validators=[InputRequired()])
+#############
+
+
+@admin_blueprint.route('/teacher_profile/<username>/edit', methods=['GET', 'POST'])
+@admin_required
+def teacher_edit(username):
+    form = TeacherEditForm()
+    teacher = Teacher.get(Teacher.username == username)
+    if form.validate_on_submit():
+        with db.transaction():
+            teacher.first_name = form.first_name.data
+            teacher.last_name = form.last_name.data
+            if teacher.save():
+                flash(teacher.username + ' updated.')
+            else:
+                flash('Something went wrong.')
+        return redirect(url_for('admin_blueprint.admin_teachers'))
+    return render_template('teacher_edit.html', teacher=teacher, form=form)
 
 
 @admin_blueprint.route('/add_specialization/<username>/', methods=['GET', 'POST'])
