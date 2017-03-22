@@ -8,6 +8,7 @@ from flask import flash
 from bcrypt import hashpw
 from bcrypt import gensalt
 from db_model import *
+from forms import NewStudentForm
 from forms import TeacherEditForm
 from forms import SubjectEditForm
 from forms import AdminLoginForm
@@ -153,7 +154,19 @@ def add_subject():
     return render_template('add_subject.html')
 
 
-@admin_blueprint.route('/subject/<name>/edit', methods=['GET', 'POST'])
+@admin_blueprint.route('/subject/<name>/', methods=['POST'])
+@admin_required
+def subject(name):
+    subj = Subject.get(Subject.name == name)
+     #grade_query = Grade.select() ...
+    if subj.delete_instance():
+        flash(subj.name + ' subject has been removed.')
+    else:
+        flash('Something went wrong.')
+    return redirect(url_for('admin_blueprint.admin_subjects'))
+
+
+@admin_blueprint.route('/subject/<name>/edit/', methods=['GET', 'POST'])
 @admin_required
 def subject_edit(name):
     form = SubjectEditForm()
