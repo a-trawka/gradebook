@@ -5,12 +5,13 @@ from flask import request
 from flask import url_for
 from flask import session
 from flask import flash
-from flask_wtf import FlaskForm
-from wtforms import StringField
-from wtforms.validators import InputRequired
 from bcrypt import hashpw
 from bcrypt import gensalt
 from db_model import *
+from forms import TeacherEditForm
+from forms import SubjectEditForm
+from forms import AdminLoginForm
+from forms import flash_errors
 from wrappers import guest_status_required
 from wrappers import admin_required
 
@@ -25,35 +26,39 @@ def authorize_admin():
 @admin_blueprint.route('/login/', methods=['GET', 'POST'])
 @guest_status_required
 def admin_login():
-    if request.method == 'POST':
-        if request.form['id'] == 'test' and request.form['pswd'] == 'test':
+    form = AdminLoginForm()
+    if form.validate_on_submit():
+        # temporary 'test'/'test'
+        if form.login.data == 'test' and form.pswd.data == 'test':
             authorize_admin()
             return redirect(url_for('homepage'))
         else:
             flash('NOPE')
-    return render_template('admin_login.html')
+    return render_template('admin_login.html', form=form)
 
 
 @admin_blueprint.route('/new_student/', methods=(['GET', 'POST']))
 @admin_required
 def new_student():
-    if request.method == 'POST' and request.form['username'] and len(request.form['password']) <= 70:
+    form = NewStudentForm()
+    if form.validate_on_submit():
         try:
             with db.transaction():
                 student = Student.create(
-                    first_name=request.form['first_name'],
-                    last_name=request.form['last_name'],
-                    group=request.form['group'],
-                    username=request.form['username'],
-                    password=hashpw(request.form['password'].encode('utf-8'), gensalt())
+                    first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    group=form.group.data,
+                    username=form.username.data,
+                    password=hashpw(form.password.data.encode('utf-8'), gensalt())
                 )
         except IntegrityError:
             flash('Username already taken')
         except DatabaseError:
             flash('An error occurred while creating a student')
         else:
-            flash('Student added')
-    return render_template('new_student.html')
+            flash(student.username + ' student created.')
+            return redirect(url_for('admin_blueprint.admin_students'))
+    return render_template('new_student.html', form=form)
 
 
 @admin_blueprint.route('/new_teacher/', methods=['GET', 'POST'])
@@ -96,13 +101,6 @@ def teacher_profile(username):
             flash('Something went wrong while trying to delete a record.')
     specs = TeacherSubject.select().where(TeacherSubject.teacher == teacher)
     return render_template('teacher_profile.html', teacher=teacher, specializations=specs)
-
-
-##################
-class TeacherEditForm(FlaskForm):
-    first_name = StringField('first_name', validators=[InputRequired()])
-    last_name = StringField('last_name', validators=[InputRequired()])
-#############
 
 
 @admin_blueprint.route('/teacher_profile/<username>/edit', methods=['GET', 'POST'])
@@ -149,10 +147,26 @@ def add_subject():
             with db.transaction():
                 subject = Subject.create(name=request.form['name'])
         except DatabaseError:
-            flash('An error occured, try again.')
+            flash('An error occurred, try again.')
         else:
             flash('Subject added.')
     return render_template('add_subject.html')
+
+
+@admin_blueprint.route('/subject/<name>/edit', methods=['GET', 'POST'])
+@admin_required
+def subject_edit(name):
+    form = SubjectEditForm()
+    subject = Subject.get(Subject.name == name)
+    if form.validate_on_submit():
+        with db.transaction():
+            subject.name = form.name.data
+            if subject.save():
+                flash(subject.name + ' subject updated.')
+            else:
+                flash('Something went wrong.')
+        return redirect(url_for('admin_blueprint.admin_subjects'))
+    return render_template('subject_edit.html', subject=subject, form=form)
 
 
 @admin_blueprint.route('/students/')

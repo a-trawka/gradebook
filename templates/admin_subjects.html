@@ -9,8 +9,16 @@
 	{% for subject in subjects %}
 		<tr>
 			<td>{{ subject.name }}</td>
-			<td></td>
-			<td></td>
+			<td>
+                <form action="{{ url_for('admin_blueprint.subject_edit', name=subject.name) }}">
+                    <input type="submit" value="E" />
+                </form>
+            </td>
+			<td>
+                <form>
+
+                </form>
+            </td>
 		</tr>
 	{% endfor %}
 	</table>
