@@ -8,3 +8,4 @@ Required:
   - [**Flask**](http://flask.pocoo.org/)
   - [**peewee ORM**](http://peewee-orm.com)
   - [**bcrypt**](https://pypi.python.org/pypi/bcrypt/)
+  - [**WTForms**](https://github.com/wtforms/wtforms)
