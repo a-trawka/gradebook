@@ -4,7 +4,7 @@
     {{ form.csrf_token }}
         <dl>
             <dt>Name of the subject:</dt>
-            <input type="text" name="name" value={{ subject.name }}>
+            <input type="text" name="name" value="{{ subject.name }}" />
             <br><br>
             <input type="submit" value="Save">
         </dl>

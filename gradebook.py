@@ -105,7 +105,7 @@ def student_profile():
 
 
 @app.route('/student_profile/<username>')
-@teacher_or_admin_required
+@teacher_required
 def student_profile_foreign(username):
     student = Student.get(Student.username == username)
     subjects = Subject.select()
