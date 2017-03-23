@@ -89,14 +89,7 @@ def teacher_profile(username):
     teacher = Teacher.get(Teacher.username == username)
     if request.method == 'POST':
         with db.transaction():
-            query = TeacherSubject.select(
-                TeacherSubject,
-                Teacher,
-                Subject).join(Teacher).switch(TeacherSubject).join(Subject).where(TeacherSubject.teacher == teacher)
-            for specialization in query:
-                if specialization.delete_instance():
-                    flash(teacher.username + '\'s specialization has been removed.')
-            if teacher.delete_instance():
+            if teacher.delete_instance(recursive=True):
                 flash(teacher.username + ' deleted.')
                 return redirect(url_for('admin_blueprint.admin_teachers'))
             flash('Something went wrong while trying to delete a record.')
@@ -158,8 +151,7 @@ def add_subject():
 @admin_required
 def subject(name):
     subj = Subject.get(Subject.name == name)
-     #grade_query = Grade.select() ...
-    if subj.delete_instance():
+    if subj.delete_instance(recursive=True):  # delete instance and all its' occurrences as foreign fields
         flash(subj.name + ' subject has been removed.')
     else:
         flash('Something went wrong.')
