@@ -8,13 +8,8 @@ from flask import flash
 from bcrypt import hashpw
 from bcrypt import gensalt
 from db_model import *
-from forms import NewStudentForm
-from forms import TeacherEditForm
-from forms import SubjectEditForm
-from forms import AdminLoginForm
-from forms import flash_errors
-from wrappers import guest_status_required
-from wrappers import admin_required
+from forms import NewStudentForm, StudentEditForm, TeacherEditForm, SubjectEditForm, AdminLoginForm
+from wrappers import guest_status_required, admin_required
 
 admin_blueprint = Blueprint('admin_blueprint', 'admin_blueprint')
 
@@ -60,6 +55,40 @@ def new_student():
             flash(student.username + ' student created.')
             return redirect(url_for('admin_blueprint.admin_students'))
     return render_template('new_student.html', form=form)
+
+
+@admin_blueprint.route('/student_profile/<username>/', methods=['GET', 'POST'])
+@admin_required
+def student_profile(username):
+    student = Student.get(Student.username == username)
+    if request.method == 'POST':
+        with db.transaction():
+            if student.delete_instance(recursive=True):
+                flash(student.username + ' deleted.')
+                return redirect(url_for('admin_blueprint.admin_students'))
+            flash('Something went wrong.')
+
+    subjects = Subject.select()
+    grades = Grade.select().where(Grade.student == student)
+    return render_template('student_profile.html', student=student, subjects=subjects, grades=grades)
+
+
+@admin_blueprint.route('/student_profile/<username>/edit/', methods=['GET', 'POST'])
+@admin_required
+def student_edit(username):
+    student = Student.get(Student.username == username)
+    form = StudentEditForm()
+    if form.validate_on_submit():
+        with db.transaction():
+            student.first_name = form.first_name.data
+            student.last_name = form.last_name.data
+            student.group = form.group.data
+            if student.save():
+                flash(student.username + ' edited.')
+            else:
+                flash('Something went wrong.')
+        return redirect(url_for('admin_blueprint.admin_students'))
+    return render_template('student_edit.html', student=student, form=form)
 
 
 @admin_blueprint.route('/new_teacher/', methods=['GET', 'POST'])
@@ -149,7 +178,7 @@ def add_subject():
 
 @admin_blueprint.route('/subject/<name>/', methods=['POST'])
 @admin_required
-def subject(name):
+def subject_remove(name):
     subj = Subject.get(Subject.name == name)
     if subj.delete_instance(recursive=True):  # delete instance and all its' occurrences as foreign fields
         flash(subj.name + ' subject has been removed.')

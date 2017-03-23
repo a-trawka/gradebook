@@ -1,14 +1,14 @@
-from flask import flash
+# from flask import flash
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms import PasswordField
 from wtforms import validators
 
 
-def flash_errors(form):
-    for field, errors in form.errors.items():
-        for error in errors:
-            flash(error)
+# def flash_errors(form):
+#     for field, errors in form.errors.items():
+#         for error in errors:
+#             flash(error)
 
 
 class AdminLoginForm(FlaskForm):
@@ -23,6 +23,12 @@ class TeacherEditForm(FlaskForm):
 
 class SubjectEditForm(FlaskForm):
     name = StringField('name', [validators.InputRequired()])
+
+
+class StudentEditForm(FlaskForm):
+    first_name = StringField('first_name', [validators.InputRequired()])
+    last_name = StringField('last_name', [validators.InputRequired()])
+    group = StringField('group', [validators.InputRequired()])
 
 
 class NewStudentForm(FlaskForm):
