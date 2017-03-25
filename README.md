@@ -1,6 +1,6 @@
 # gradebook
 School gradebook web app by Adrian Trawka.
-Main goal: learn more and more about python backend
+Main goal: learn more and more about python and backend development
 
 Required:
   - **python3**
