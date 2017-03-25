@@ -9,6 +9,7 @@ from bcrypt import hashpw
 from bcrypt import gensalt
 from db_model import *
 from forms import NewStudentForm, StudentEditForm, TeacherEditForm, SubjectEditForm, AdminLoginForm
+from forms import flash_errors
 from wrappers import guest_status_required, admin_required
 
 admin_blueprint = Blueprint('admin_blueprint', 'admin_blueprint')
@@ -30,6 +31,7 @@ def admin_login():
             return redirect(url_for('homepage'))
         else:
             flash('NOPE')
+    flash_errors(form)
     return render_template('admin_login.html', form=form)
 
 
@@ -54,6 +56,7 @@ def new_student():
         else:
             flash(student.username + ' student created.')
             return redirect(url_for('admin_blueprint.admin_students'))
+    flash_errors(form)
     return render_template('new_student.html', form=form)
 
 
@@ -77,7 +80,7 @@ def student_profile(username):
 @admin_required
 def student_edit(username):
     student = Student.get(Student.username == username)
-    form = StudentEditForm()
+    form = StudentEditForm(first_name=student.first_name, last_name=student.last_name, group=student.group)
     if form.validate_on_submit():
         with db.transaction():
             student.first_name = form.first_name.data
@@ -88,6 +91,7 @@ def student_edit(username):
             else:
                 flash('Something went wrong.')
         return redirect(url_for('admin_blueprint.admin_students'))
+    flash_errors(form)
     return render_template('student_edit.html', student=student, form=form)
 
 
@@ -129,8 +133,8 @@ def teacher_profile(username):
 @admin_blueprint.route('/teacher_profile/<username>/edit', methods=['GET', 'POST'])
 @admin_required
 def teacher_edit(username):
-    form = TeacherEditForm()
     teacher = Teacher.get(Teacher.username == username)
+    form = TeacherEditForm(first_name=teacher.first_name, last_name=teacher.last_name)
     if form.validate_on_submit():
         with db.transaction():
             teacher.first_name = form.first_name.data
@@ -140,6 +144,7 @@ def teacher_edit(username):
             else:
                 flash('Something went wrong.')
         return redirect(url_for('admin_blueprint.admin_teachers'))
+    flash_errors(form)
     return render_template('teacher_edit.html', teacher=teacher, form=form)
 
 
@@ -190,8 +195,8 @@ def subject_remove(name):
 @admin_blueprint.route('/subject/<name>/edit/', methods=['GET', 'POST'])
 @admin_required
 def subject_edit(name):
-    form = SubjectEditForm()
     subject = Subject.get(Subject.name == name)
+    form = SubjectEditForm(name=subject.name)
     if form.validate_on_submit():
         with db.transaction():
             subject.name = form.name.data
@@ -199,6 +204,7 @@ def subject_edit(name):
                 flash(subject.name + ' subject updated.')
             else:
                 flash('Something went wrong.')
+            flash_errors(form)
         return redirect(url_for('admin_blueprint.admin_subjects'))
     return render_template('subject_edit.html', subject=subject, form=form)
 
