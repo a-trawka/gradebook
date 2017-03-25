@@ -1,12 +1,11 @@
 {% extends "layout.html" %}
 {% block body %}
     <form action="{{ url_for('admin_blueprint.subject_edit', name=subject.name) }}" method='post'>
-    {{ form.csrf_token }}
         <dl>
             <dt>Name of the subject:</dt>
-            <input type="text" name="name" value="{{ subject.name }}" />
+            {{ form.name }}
             <br><br>
-            <input type="submit" value="Save">
+            {{ form.submit }}
         </dl>
     </form>
 {% endblock %}

@@ -1,16 +1,15 @@
 {% extends "layout.html" %}
 {% block body %}
-    <form action="{{ url_for('admin_blueprint.admin_login') }}" , method="post">
-        {{ form.csrf_token }}
+    <form action="{{ url_for('admin_blueprint.admin_login') }}" method="post">
         <dl>
-            <dt>ID:</dt>
-            <input type="password" name="login">
+            <dt>{{ form.login.label }}</dt>
+            {{ form.login }}
 
-            <dt>PSWD:</dt>
-            <input type="password" name="pswd">
+            <dt>{{ form.pswd.label }}</dt>
+            {{ form.pswd }}
 
             <br><br>
-            <input type="submit" value="OK">
+            {{ form.submit }}
         </dl>
     </form>
 {% endblock %}
