@@ -1,25 +1,17 @@
 """Gradebook web application, by Adrian Trawka - https://github.com/a-trawka"""
-from flask import Flask
-from flask import g
-from flask import redirect
-from flask import render_template
-from flask import request
-from flask import url_for
-from flask import session
-from flask import flash
+from flask import Flask, g, redirect, render_template, request, url_for, session, flash
 from bcrypt import hashpw
-from wrappers import login_required
-from wrappers import guest_status_required
-from wrappers import teacher_required
-from wrappers import teacher_or_admin_required
-from wrappers import student_required
+from wrappers import login_required, guest_status_required, teacher_required, student_required
 from db_model import *
 from custom_exceptions import WrongPasswordException
+from forms import AddGradeForm, StudentLoginForm, TeacherLoginForm
+from forms import flash_errors
 from admin import admin_blueprint
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
 app.config['SECRET_KEY'] = 'development'
+app.config['WTF_CSRF_ENABLED'] = False
 app.register_blueprint(admin_blueprint, url_prefix='/admin')
 
 db = get_db()
@@ -52,6 +44,8 @@ def get_current_user():
             return Student.get(Student.username == session['username'])
         elif session['type'] == 'T':
             return Teacher.get(Teacher.username == session['username'])
+
+
 # end of miscellaneous methods block
 
 
@@ -76,14 +70,15 @@ def homepage():
 @app.route('/student_login/', methods=['GET', 'POST'])
 @guest_status_required
 def student_login():
-    if request.method == 'POST' and request.form['username']:
+    form = StudentLoginForm()
+    if form.validate_on_submit():
         try:
-            student = Student.get(username=request.form['username'])
+            student = Student.get(username=form.username.data)
             # adequate salt is stored in the password itself
-            salt_password = student.password.encode('utf-8')
-            password_to_check = request.form['password'].encode('utf-8')
-            password = hashpw(password_to_check, salt_password)
-            if not password == salt_password:
+            stored_password = student.password.encode('utf-8')
+            password_to_check = form.password.data.encode('utf-8')
+            password = hashpw(password_to_check, stored_password)
+            if password != stored_password:
                 raise WrongPasswordException('Wrong password')
         except WrongPasswordException:
             flash('Wrong password')
@@ -92,7 +87,8 @@ def student_login():
         else:
             authorize_student(student)
             return redirect(url_for('student_profile'))
-    return render_template('student_login.html')
+    flash_errors(form)
+    return render_template('student_login.html', form=form)
 
 
 @app.route('/student_profile/')
@@ -105,7 +101,7 @@ def student_profile():
 
 
 @app.route('/student_profile/<username>')
-@teacher_or_admin_required
+@teacher_required
 def student_profile_foreign(username):
     student = Student.get(Student.username == username)
     subjects = Subject.select()
@@ -113,40 +109,44 @@ def student_profile_foreign(username):
     return render_template('student_profile.html', student=student, subjects=subjects, grades=grades)
 
 
-# TODO: validation of the form (if empty)
 @app.route('/add_grade/', methods=['GET', 'POST'])
 @teacher_required
 def add_grade():
-    if request.method == 'POST':
+    form = AddGradeForm()
+    if form.validate_on_submit():
         try:
             with db.transaction():
                 grade = Grade.create(
-                    student=Student.get(Student.username == request.form['student_select']),
-                    subject=Subject.get(Subject.name == request.form['subject_select']),
+                    student=Student.get(Student.username == form.student_select.data),
+                    subject=Subject.get(Subject.name == form.subject_select.data),
                     teacher=get_current_user(),
-                    grade=request.form['grade_select']
+                    grade=form.grade.data
                 )
         except DatabaseError:
             flash('An error occurred while adding a grade')
         else:
-            flash('Grade added')
+            flash('Grade ' + str(grade.grade) + ' assigned to student ' + str(grade.student))
+            return redirect(url_for('groups', group=grade.student.username))
+    flash_errors(form)
     students = Student.select()
     subjects = Subject.select()
-    return render_template('add_grade.html', students=students, subjects=subjects)
+    return render_template('add_grade.html', students=students, subjects=subjects, form=form)
 
 
 @app.route('/teacher_login/', methods=['GET', 'POST'])
 @guest_status_required
 def teacher_login():
-    if request.method == 'POST' and request.form['username']:
+    # TODO: WTForm
+    form = TeacherLoginForm()
+    if form.validate_on_submit():
         try:
-            teacher = Teacher.get(username=request.form['username'])
+            teacher = Teacher.get(username=form.username.data)
             # adequate salt is stored in the password itself
-            salt_password = teacher.password.encode('utf-8')
-            password_to_check = request.form['password'].encode('utf-8')
-            password = hashpw(password_to_check, salt_password)
-            if not password == salt_password:
-                raise WrongPasswordException()
+            stored_password = teacher.password.encode('utf-8')
+            password_to_check = form.password.data.encode('utf-8')
+            password = hashpw(password_to_check, stored_password)
+            if password != stored_password:
+                raise WrongPasswordException('Wrong password')
         except WrongPasswordException:
             flash('Wrong password')
         except Teacher.DoesNotExist:
@@ -154,7 +154,8 @@ def teacher_login():
         else:
             authorize_teacher(teacher)
             return redirect(url_for('teacher_profile'))
-    return render_template('teacher_login.html')
+    flash_errors(form)
+    return render_template('teacher_login.html', form=form)
 
 
 @app.route('/teacher_profile/')

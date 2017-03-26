@@ -1,13 +1,14 @@
 {% extends "layout.html" %}
 {% block body %}
-    <form action="{{ url_for('teacher_login') }}", method=post>
+    <h2>Log in as a teacher</h2>
+    <form action="{{ url_for('teacher_login') }}" , method=post>
         <dl>
-            <dt>Username:</dt>
-            <input type="text" name="username">
-            <dt>Password:</dt>
-            <input type="password" name="password">
+            <dt>{{ form.username.label }}</dt>
+            {{ form.username }}
+            <dt>{{ form.password.label }}</dt>
+            {{ form.password }}
             <br><br>
-            <input type="submit" value="Log in">
+            {{ form.submit }}
         </dl>
     </form>
 {% endblock %}

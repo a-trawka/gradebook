@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block body %}
+    <form action="{{ url_for('admin_blueprint.student_edit', username=student.username) }}" method='post'>
+        <dl>
+            <dt>{{ form.first_name.label }} </dt>
+            {{ form.first_name }}
+
+            <dt>{{ form.last_name.label }}</dt>
+            {{ form.last_name }}
+
+            <dt>{{ form.group.label }}</dt>
+            {{ form.group }}
+
+            <br><br>
+            {{ form.submit }}
+        </dl>
+    </form>
+{% endblock %}

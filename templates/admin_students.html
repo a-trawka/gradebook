@@ -1,26 +1,38 @@
 {% extends "layout.html" %}
 {% block body %}
-  <table>
-    <tr>
-      	<th>First name</th>
-      	<th>Last name</th>
-      	<th>Username</th>
-      	<th>Group</th>
-	<th>Edit</th>
-	<th>Remove</th>
-    </tr>
-    {% for student in students %}
-    <tr>
-      	<td>{{ student.first_name }}</td>
-      	<td>{{ student.last_name }}</td>
-      	<td><a href="{{ url_for('student_profile_foreign', username=student.username) }}">{{ student.username }}</a></td>
-      	<td>{{ student.group }}</td>
-	<td></td>
-	<td></td>
-    </tr>
-    {% endfor %}
-  </table>
-	<div class="universal">
-		<a href="{{ url_for('admin_blueprint.new_student') }}">Add</a>
-	</div>
+    <table>
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Username</th>
+            <th>Group</th>
+            <th>Edit</th>
+            <th>Remove</th>
+        </tr>
+        {% for student in students %}
+            <tr>
+                <td>{{ student.first_name }}</td>
+                <td>{{ student.last_name }}</td>
+                <td>
+                    <a href="{{ url_for('admin_blueprint.student_profile', username=student.username) }}">{{ student.username }}</a>
+                </td>
+                <td>{{ student.group }}</td>
+                <td>
+                    <form action="{{ url_for('admin_blueprint.student_edit', username=student.username) }}"
+                          method="post">
+                        <input type="submit" value="E"/>
+                    </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('admin_blueprint.student_profile', username=student.username) }}"
+                          method="post">
+                        <input type="submit" value="X"/>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="universal">
+        <a href="{{ url_for('admin_blueprint.new_student') }}">Add</a>
+    </div>
 {% endblock %}

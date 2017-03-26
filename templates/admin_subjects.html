@@ -1,20 +1,28 @@
 {% extends "layout.html" %}
 {% block body %}
-	<table>
-		<tr>
-			<th>Subject</th>
-			<th>Edit</th>
-			<th>Remove</th>
-		</tr>
-	{% for subject in subjects %}
-		<tr>
-			<td>{{ subject.name }}</td>
-			<td></td>
-			<td></td>
-		</tr>
-	{% endfor %}
-	</table>
-	<div class="universal">
-		<a href="{{ url_for('admin_blueprint.add_subject') }}">Add</a>
-	</div>
+    <table>
+        <tr>
+            <th>Subject</th>
+            <th>Edit</th>
+            <th>Remove</th>
+        </tr>
+        {% for subject in subjects %}
+            <tr>
+                <td>{{ subject.name }}</td>
+                <td>
+                    <form action="{{ url_for('admin_blueprint.subject_edit', name=subject.name) }}" method="post">
+                        <input type="submit" value="E"/>
+                    </form>
+                </td>
+                <td>
+                    <form action="{{ url_for('admin_blueprint.subject_remove', name=subject.name) }}" method="post">
+                        <input type="submit" value="X"/>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="universal">
+        <a href="{{ url_for('admin_blueprint.add_subject') }}">Add</a>
+    </div>
 {% endblock %}

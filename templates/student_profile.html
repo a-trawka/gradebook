@@ -14,7 +14,7 @@
     <h2>Grades</h2>
     {% for subject in subjects %}
         <dl>
-            <dt>{{ subject.name }}</dt>
+            <dt>{{ subject.name }}:</dt>
             <dd>
                 {% for grade in grades %}
                     {% if grade.subject.name == subject.name %}

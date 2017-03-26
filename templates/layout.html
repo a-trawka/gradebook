@@ -17,12 +17,13 @@
                 <a href="{{ url_for('group') }}">Group</a>
             {% elif session['type'] == 'T' %}
                 <a href="{{ url_for('teacher_profile') }}">Teacher</a>
-                <a href="{{ url_for('groups') }}">Groups</a>
+                <a href="{{ url_for('groups') }}">Student groups</a>
                 <a href="{{ url_for('add_grade') }}">Grade</a>
             {% endif %}
             <a href="{{ url_for('logout') }}">Log out</a>
         {% else %}
-            <a href="{{ url_for('student_login') }}">Log in</a>
+            <a href="{{ url_for('student_login') }}">Student log in</a>
+            <a href="{{ url_for('teacher_login') }}">Teacher log in</a>
         {% endif %}
     </div>
     {% for msg in get_flashed_messages() %}

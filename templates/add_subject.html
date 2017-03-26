@@ -2,10 +2,10 @@
 {% block body %}
 	<form action="{{ url_for('admin_blueprint.add_subject') }}" method="post">
 		<dl>
-			<dt>Name:</dt>
-			<input type="text" name="name" title="Name of the subject">
+			<dt>{{ form.name.label }}</dt>
+			{{ form.name }}
 			<br><br>
-			<input type="submit" value="Create">
+			{{ form.submit }}
 		</dl>
 	</form>
 {% endblock %}

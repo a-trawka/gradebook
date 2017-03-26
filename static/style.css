@@ -5,7 +5,7 @@ dd                      { margin-left: 47%; }
 a:link                  { color: darkslategrey; text-decoration: none; }
 a:visited	              { color: darkslategrey; }
 table                   { margin-left: 25%; padding: 0.6em; }
-input                   { margin-left: 47%;}
+input                   { margin-left: 40%;}
 select                  { margin-left: 40%; padding: 0.1em; margin-bottom: 0.3em; width: 13em; }
 .container              { width: 100%; }
 .container_inner        { margin: 0 auto; width: 50%; background-color: #f2f2f2; margin-top: 1.5em; padding-bottom: 2em; }
