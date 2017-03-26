@@ -14,7 +14,7 @@
                 <td>{{ student.first_name }}</td>
                 <td>{{ student.last_name }}</td>
                 <td>
-                    <a href="{{ url_for('student_profile', username=student.username) }}">{{ student.username }}</a>
+                    <a href="{{ url_for('admin_blueprint.student_profile', username=student.username) }}">{{ student.username }}</a>
                 </td>
                 <td>{{ student.group }}</td>
                 <td>
