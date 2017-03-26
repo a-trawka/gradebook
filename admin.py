@@ -8,7 +8,7 @@ from flask import flash
 from bcrypt import hashpw
 from bcrypt import gensalt
 from db_model import *
-from forms import NewStudentForm, StudentEditForm, TeacherEditForm, SubjectEditForm, AdminLoginForm
+from forms import AddSubjectForm, AddSpecializationForm, NewStudentForm, StudentEditForm, TeacherEditForm, SubjectEditForm, AdminLoginForm, NewTeacherForm
 from forms import flash_errors
 from wrappers import guest_status_required, admin_required
 
@@ -64,13 +64,12 @@ def new_student():
 @admin_required
 def student_profile(username):
     student = Student.get(Student.username == username)
-    if request.method == 'POST':
+    if request.method == 'POST':  # removing
         with db.transaction():
             if student.delete_instance(recursive=True):
                 flash(student.username + ' deleted.')
                 return redirect(url_for('admin_blueprint.admin_students'))
             flash('Something went wrong.')
-
     subjects = Subject.select()
     grades = Grade.select().where(Grade.student == student)
     return render_template('student_profile.html', student=student, subjects=subjects, grades=grades)
@@ -88,9 +87,9 @@ def student_edit(username):
             student.group = form.group.data
             if student.save():
                 flash(student.username + ' edited.')
+                return redirect(url_for('admin_blueprint.admin_students'))
             else:
                 flash('Something went wrong.')
-        return redirect(url_for('admin_blueprint.admin_students'))
     flash_errors(form)
     return render_template('student_edit.html', student=student, form=form)
 
@@ -98,14 +97,15 @@ def student_edit(username):
 @admin_blueprint.route('/new_teacher/', methods=['GET', 'POST'])
 @admin_required
 def new_teacher():
-    if request.method == 'POST' and request.form['username'] and len(request.form['password']) <= 70:
+    form = NewTeacherForm()
+    if form.validate_on_submit():
         try:
             with db.transaction():
-                teacher = Teacher.create(
-                    first_name=request.form['first_name'],
-                    last_name=request.form['last_name'],
-                    username=request.form['username'],
-                    password=hashpw(request.form['password'].encode('utf-8'), gensalt())
+                Teacher.create(
+                    first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    username=form.username.data,
+                    password=hashpw(form.password.data.encode('utf-8'), gensalt())
                 )
         except IntegrityError:
             flash('Username already taken')
@@ -113,7 +113,9 @@ def new_teacher():
             flash('An error occurred while creating a teacher')
         else:
             flash('Teacher created')
-    return render_template('new_teacher.html')
+            return redirect(url_for('admin_blueprint.admin_teachers'))
+    flash_errors(form)
+    return render_template('new_teacher.html', form=form)
 
 
 @admin_blueprint.route('/teacher_profile/<username>/', methods=['GET', 'POST'])
@@ -151,12 +153,13 @@ def teacher_edit(username):
 @admin_blueprint.route('/add_specialization/<username>/', methods=['GET', 'POST'])
 @admin_required
 def add_specialization(username):
-    if request.method == 'POST':
+    form = AddSpecializationForm()
+    if form.validate_on_submit():
         try:
             with db.transaction():
                 spec = TeacherSubject.get_or_create(
                     teacher=Teacher.get(Teacher.username == username),
-                    specialization=Subject.get(Subject.name == request.form['subject_select'])
+                    specialization=Subject.get(Subject.name == form.subject_select.data)
                 )
         except DatabaseError:
             flash('An error occurred, try again')
@@ -164,21 +167,24 @@ def add_specialization(username):
             flash('Specialization added')
     subs = Subject.select()
     teacher = Teacher.get(Teacher.username == username)
-    return render_template('add_specialization.html', teacher=teacher, subjects=subs)
+    flash_errors(form)
+    return render_template('add_specialization.html', teacher=teacher, subjects=subs, form=form)
 
 
 @admin_blueprint.route('/add_subject/', methods=['GET', 'POST'])
 @admin_required
 def add_subject():
-    if request.method == 'POST':
+    form = AddSubjectForm()
+    if form.validate_on_submit():
         try:
             with db.transaction():
-                subject = Subject.create(name=request.form['name'])
+                Subject.create(name=form.name.data)
         except DatabaseError:
             flash('An error occurred, try again.')
         else:
             flash('Subject added.')
-    return render_template('add_subject.html')
+    flash_errors(form)
+    return render_template('add_subject.html', form=form)
 
 
 @admin_blueprint.route('/subject/<name>/', methods=['POST'])
