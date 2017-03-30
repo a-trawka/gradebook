@@ -3,8 +3,8 @@ from flask import Flask, g, render_template
 from wrappers import login_required, guest_status_required, teacher_required, student_required
 from model import *
 from admin import admin_blueprint
-from view_methods import vm_student_login, vm_student_profile, vm_student_profile_foreign, vm_add_grade, \
-    vm_teacher_login, vm_teacher_profile, vm_groups, vm_group, vm_group_foreign, vm_logout
+from view import student_login_, student_profile_, student_profile_foreign_, add_grade_, \
+    teacher_login_, teacher_profile_, groups_, group_, group_foreign_, logout_
 
 app = Flask(__name__)
 app.config['DEBUG'] = True
@@ -41,61 +41,61 @@ def homepage():
 @app.route('/student_login/', methods=['GET', 'POST'])
 @guest_status_required
 def student_login():
-    return vm_student_login()
+    return student_login_()
 
 
 @app.route('/student_profile/')
 @student_required
 def student_profile():
-    return vm_student_profile()
+    return student_profile_()
 
 
 @app.route('/student_profile/<username>')
 @teacher_required
 def student_profile_foreign(username):
-    return vm_student_profile_foreign(username)
+    return student_profile_foreign_(username)
 
 
 @app.route('/add_grade/', methods=['GET', 'POST'])
 @teacher_required
 def add_grade():
-    return vm_add_grade()
+    return add_grade_()
 
 
 @app.route('/teacher_login/', methods=['GET', 'POST'])
 @guest_status_required
 def teacher_login():
-    return vm_teacher_login()
+    return teacher_login_()
 
 
 @app.route('/teacher_profile/')
 @teacher_required
 def teacher_profile():
-    return vm_teacher_profile()
+    return teacher_profile_()
 
 
 @app.route('/groups/')
 @teacher_required
 def groups():
-    return vm_groups()
+    return groups_()
 
 
 @app.route('/group/')
 @student_required
 def group():
-    return vm_group()
+    return group_()
 
 
 @app.route('/group/<int:group_number>/')
 @teacher_required
 def group_foreign(group_number):
-    return vm_group_foreign(group_number)
+    return group_foreign_(group_number)
 
 
 @app.route('/logout/')
 @login_required
 def logout():
-    return vm_logout()
+    return logout_()
 
 
 if __name__ == '__main__':
