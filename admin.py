@@ -7,7 +7,7 @@ from flask import session
 from flask import flash
 from bcrypt import hashpw
 from bcrypt import gensalt
-from db_model import *
+from model import *
 from forms import AddSubjectForm, AddSpecializationForm, NewStudentForm, StudentEditForm, TeacherEditForm, SubjectEditForm, AdminLoginForm, NewTeacherForm
 from forms import flash_errors
 from wrappers import guest_status_required, admin_required
@@ -41,7 +41,7 @@ def new_student():
     form = NewStudentForm()
     if form.validate_on_submit():
         try:
-            with db.transaction():
+            with get_db()().transaction():
                 student = Student.create(
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
@@ -65,7 +65,7 @@ def new_student():
 def student_profile(username):
     student = Student.get(Student.username == username)
     if request.method == 'POST':  # removing
-        with db.transaction():
+        with get_db().transaction():
             if student.delete_instance(recursive=True):
                 flash(student.username + ' deleted.')
                 return redirect(url_for('admin_blueprint.admin_students'))
@@ -81,7 +81,7 @@ def student_edit(username):
     student = Student.get(Student.username == username)
     form = StudentEditForm(first_name=student.first_name, last_name=student.last_name, group=student.group)
     if form.validate_on_submit():
-        with db.transaction():
+        with get_db().transaction():
             student.first_name = form.first_name.data
             student.last_name = form.last_name.data
             student.group = form.group.data
@@ -100,7 +100,7 @@ def new_teacher():
     form = NewTeacherForm()
     if form.validate_on_submit():
         try:
-            with db.transaction():
+            with get_db().transaction():
                 Teacher.create(
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,
@@ -123,7 +123,7 @@ def new_teacher():
 def teacher_profile(username):
     teacher = Teacher.get(Teacher.username == username)
     if request.method == 'POST':
-        with db.transaction():
+        with get_db().transaction():
             if teacher.delete_instance(recursive=True):
                 flash(teacher.username + ' deleted.')
                 return redirect(url_for('admin_blueprint.admin_teachers'))
@@ -138,7 +138,7 @@ def teacher_edit(username):
     teacher = Teacher.get(Teacher.username == username)
     form = TeacherEditForm(first_name=teacher.first_name, last_name=teacher.last_name)
     if form.validate_on_submit():
-        with db.transaction():
+        with get_db().transaction():
             teacher.first_name = form.first_name.data
             teacher.last_name = form.last_name.data
             if teacher.save():
@@ -156,7 +156,7 @@ def add_specialization(username):
     form = AddSpecializationForm()
     if form.validate_on_submit():
         try:
-            with db.transaction():
+            with get_db().transaction():
                 spec = TeacherSubject.get_or_create(
                     teacher=Teacher.get(Teacher.username == username),
                     specialization=Subject.get(Subject.name == form.subject_select.data)
@@ -177,7 +177,7 @@ def add_subject():
     form = AddSubjectForm()
     if form.validate_on_submit():
         try:
-            with db.transaction():
+            with get_db().transaction():
                 Subject.create(name=form.name.data)
         except DatabaseError:
             flash('An error occurred, try again.')
@@ -204,7 +204,7 @@ def subject_edit(name):
     subject = Subject.get(Subject.name == name)
     form = SubjectEditForm(name=subject.name)
     if form.validate_on_submit():
-        with db.transaction():
+        with get_db().transaction():
             subject.name = form.name.data
             if subject.save():
                 flash(subject.name + ' subject updated.')
