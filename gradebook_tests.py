@@ -73,110 +73,75 @@ class AdminPanelTest(unittest.TestCase):
 
 class DatabaseOperationsTest(unittest.TestCase):
     model.get_db().init('test_db.db')
-    table_model = [model.Student,
-                   model.Teacher,
-                   model.Subject,
-                   model.Grade,
-                   model.TeacherSubject]
+    _student_template = {'first_name': 'test',
+                         'last_name': 'test',
+                         'group': 'test',
+                         'username': 'test_student',
+                         'password': 'test'}
+    _teacher_template = {'first_name': 'test',
+                         'last_name': 'test',
+                         'username': 'test_teacher',
+                         'password': 'test'}
+    _table_model = [model.Student, model.Teacher, model.Subject, model.Grade, model.TeacherSubject]
 
     def setUp(self):
         app.testing = True
         self.client = app.test_client()
 
-    # misc
-    def login_student(self, login, password):
-        return self.client.post('/student_login/', data=dict(
-            username=login,
-            password=password
-        ), follow_redirects=True)
+    def tearDown(self):
+        model.get_db().drop_tables(self._table_model, safe=True)
 
-    # misc
-    def login_teacher(self, login, password):
-        return self.client.post('/teacher_login/', data=dict(
-            username=login,
-            password=password
-        ), follow_redirects=True)
+    def test_db_student(self):
+        with test_database(model.get_db(), [model.Student], create_tables=True, drop_tables=True):
+            test_student = Student.create(**self._student_template)
+            self.assertTrue(test_student)
+            self.assertEqual(test_student, Student.get(Student.username == 'test_student'))
+            self.assertTrue(test_student.delete_instance())
 
-    # misc
-    def logout(self):
-        return self.client.get('/logout/', follow_redirects=True)
+    def test_db_teacher(self):
+        with test_database(model.get_db(), [model.Teacher], create_tables=True, drop_tables=True):
+            test_teacher = Teacher.create(**self._teacher_template)
+            self.assertTrue(test_teacher)
+            self.assertEqual(test_teacher, Teacher.get(Teacher.username == 'test_teacher'))
+            self.assertTrue(test_teacher.delete_instance())
 
-    #
-    # def test_correct_student_login_logout(self):
-    #     resp = self.login_student('atrawka', 'abcd')  # correct username, correct password
-    #     self.assertIn(b"<h1>Student\'s profile</h1>", resp.data)
-    #     resp = self.logout()
-    #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
-    #
-    # def test_incorrect_student_login(self):
-    #     resp = self.login_student('atrawka', 'incorrect')  # correct username, incorrect password
-    #     self.assertIn(b"Wrong password", resp.data)
-    #     resp = self.login_student('incorrect', 'incorrect')  # incorrect username, incorrect password
-    #     self.assertIn(b"Wrong username or password", resp.data)
-    #
-    # def test_correct_teacher_login_logout(self):
-    #     resp = self.login_teacher('eunice', 'abc')  # correct username, correct password
-    #     self.assertIn(b"<h1>Teacher\'s profile</h1>", resp.data)
-    #     resp = self.logout()
-    #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
-    #
-    # def test_incorrect_teacher_login(self):
-    #     resp = self.login_teacher('eunice', 'incorrect')  # correct username, incorrect password
-    #     self.assertIn(b"Wrong password", resp.data)
-    #     resp = self.login_teacher('incorrect', 'incorrect')  # incorrect username, incorrect password
-    #     self.assertIn(b"Wrong username or password", resp.data)
-    #
-    # def test_get_current_user(self):
-    #     with test_database(self.t_db, [db_model.Teacher]):
-    #         test_teacher = Teacher.create(first_name='test',
-    #                                       last_name='test',
-    #                                       username='test_teacher',
-    #                                       password=hashpw('test'.encode('utf-8'), gensalt()))
-    #         with app.test_request_context():
-    #             resp = self.login_teacher('test_teacher', 'test')
-    #             authorize_teacher(test_teacher)
-    #             self.assertIn(b"<h1>Teacher\'s profile</h1>", resp.data)
-    #             self.assertEqual(get_current_user(), test_teacher)
-
-    # def test_guest_required(self):
-    #     self.login_student('atrawka', 'abc')
-    #     resp = self.client.get('/student_login/', follow_redirects=True)
-    #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
-    #     resp = self.client.get('/logout/', follow_redirects=True)
-    #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
+    def test_db_subject(self):
+        with test_database(model.get_db(), [model.Subject], create_tables=True, drop_tables=True):
+            test_subject = Subject.create(name='test_subject')
+            self.assertTrue(test_subject)
+            self.assertEqual(test_subject, Subject.get(Subject.name == 'test_subject'))
+            self.assertTrue(test_subject.delete_instance())
 
     def test_db_specialization(self):
-        with test_database(model.get_db(), self.table_model, create_tables=True, drop_tables=True):
+        """Create few test records needed to create TeacherSubject object.
+        This covers tests of: 
+        - creating TeacherSubject object
+        - deleting teacher/subject recursively, what leads to deleting dependent TeacherSubject object
+        """
+        with test_database(model.get_db(), self._table_model, create_tables=True, drop_tables=True):
             test_subject = Subject.create(name='test_subject')
-            test_teacher = Teacher.create(first_name='test', last_name='test', username='test_teacher', password='test')
-            test_specialization = model.TeacherSubject.create(teacher=test_teacher, specialization=test_subject)
-            self.assertTrue(test_subject)
-            self.assertTrue(test_teacher)
+            test_teacher = Teacher.create(**self._teacher_template)
+            test_specialization = TeacherSubject.create(teacher=test_teacher, specialization=test_subject)
             self.assertTrue(test_specialization)
             self.assertTrue(test_teacher.delete_instance(recursive=True))  # delete teacher and its dependencies
             self.assertTrue(test_subject.delete_instance())
-            self.assertFalse(model.TeacherSubject.select().where(model.TeacherSubject.teacher == test_teacher,
-                                                                 model.TeacherSubject.specialization == test_subject))
-            self.assertFalse(model.Teacher.select().where(model.Teacher.username == 'test_teacher'))
-            self.assertFalse(model.Subject.select().where(model.Subject.name == 'test_subject'))
+            self.assertFalse(TeacherSubject.select().where(
+                TeacherSubject.teacher == test_teacher,
+                TeacherSubject.specialization == test_subject))
+            self.assertFalse(Teacher.select().where(Teacher.username == 'test_teacher'))
+            self.assertFalse(Subject.select().where(Subject.name == 'test_subject'))
 
     def test_db_grading(self):
-        with test_database(model.get_db(), self.table_model, create_tables=True, drop_tables=True):
+        """Create few test records needed to test grading system.
+        This covers tests of:
+        - creating Grade object
+        - deleting objects which Grade object is dependent on, what results in deleting the grade as well
+        """
+        with test_database(model.get_db(), self._table_model, create_tables=True, drop_tables=True):
             test_subject_1 = model.Subject.create(name='test_subject1')
             test_subject_2 = model.Subject.create(name='test_subject2')
-            test_teacher = model.Teacher.create(first_name='test',
-                                                last_name='test',
-                                                username='test_teacher',
-                                                password='test')
-            test_student = model.Student.create(first_name='test',
-                                                last_name='test',
-                                                group='test',
-                                                username='test_student',
-                                                password='test')
-            self.assertTrue(test_subject_1)
-            self.assertTrue(test_subject_2)
-            self.assertTrue(test_teacher)
-            self.assertTrue(test_student)
+            test_teacher = model.Teacher.create(**self._teacher_template)
+            test_student = model.Student.create(**self._student_template)
             test_grade_1 = model.Grade.create(student=test_student, subject=test_subject_1, teacher=test_teacher,
                                               grade='1')
             test_grade_2 = model.Grade.create(student=test_student, subject=test_subject_2, teacher=test_teacher,
@@ -189,6 +154,66 @@ class DatabaseOperationsTest(unittest.TestCase):
             self.assertTrue(test_subject_2.delete_instance())
             self.assertTrue(test_teacher.delete_instance())
             self.assertTrue(test_student.delete_instance())
+
+
+class UserOperationsTest(unittest.TestCase):
+    def login_student(self, login, password):
+        return self.client.post('/student_login/', data=dict(
+            username=login,
+            password=password
+        ), follow_redirects=True)
+
+    def login_teacher(self, login, password):
+        return self.client.post('/teacher_login/', data=dict(
+            username=login,
+            password=password
+        ), follow_redirects=True)
+
+    def logout(self):
+        return self.client.get('/logout/', follow_redirects=True)
+
+        # def test_correct_student_login_logout(self):
+        #     resp = self.login_student('atrawka', 'abcd')  # correct username, correct password
+        #     self.assertIn(b"<h1>Student\'s profile</h1>", resp.data)
+        #     resp = self.logout()
+        #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
+        #
+        # def test_incorrect_student_login(self):
+        #     resp = self.login_student('atrawka', 'incorrect')  # correct username, incorrect password
+        #     self.assertIn(b"Wrong password", resp.data)
+        #     resp = self.login_student('incorrect', 'incorrect')  # incorrect username, incorrect password
+        #     self.assertIn(b"Wrong username or password", resp.data)
+        #
+        # def test_correct_teacher_login_logout(self):
+        #     resp = self.login_teacher('eunice', 'abc')  # correct username, correct password
+        #     self.assertIn(b"<h1>Teacher\'s profile</h1>", resp.data)
+        #     resp = self.logout()
+        #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
+        #
+        # def test_incorrect_teacher_login(self):
+        #     resp = self.login_teacher('eunice', 'incorrect')  # correct username, incorrect password
+        #     self.assertIn(b"Wrong password", resp.data)
+        #     resp = self.login_teacher('incorrect', 'incorrect')  # incorrect username, incorrect password
+        #     self.assertIn(b"Wrong username or password", resp.data)
+        #
+        # def test_get_current_user(self):
+        #     with test_database(self.t_db, [db_model.Teacher]):
+        #         test_teacher = Teacher.create(first_name='test',
+        #                                       last_name='test',
+        #                                       username='test_teacher',
+        #                                       password=hashpw('test'.encode('utf-8'), gensalt()))
+        #         with app.test_request_context():
+        #             resp = self.login_teacher('test_teacher', 'test')
+        #             authorize_teacher(test_teacher)
+        #             self.assertIn(b"<h1>Teacher\'s profile</h1>", resp.data)
+        #             self.assertEqual(get_current_user(), test_teacher)
+        #
+        # def test_guest_required(self):
+        #     self.login_student('atrawka', 'abc')
+        #     resp = self.client.get('/student_login/', follow_redirects=True)
+        #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
+        #     resp = self.client.get('/logout/', follow_redirects=True)
+        #     self.assertIn(b"<h1>Welcome</h1>", resp.data)
 
 
 if __name__ == '__main__':
