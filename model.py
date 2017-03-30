@@ -1,15 +1,25 @@
 from peewee import *
+from gradebook import app
 
-db = SqliteDatabase('gradebook.db')
+db_proxy = Proxy()
+
+if app.config['DEBUG']:
+    database = SqliteDatabase('gradebook.db')
+elif app.config['TESTING']:
+    database = SqliteDatabase('test_db.db')
+else:
+    print('#############################333333312321321')
+
+db_proxy.initialize(database)
 
 
-def get_db():
-    return db
+def get_db_proxy():
+    return db_proxy
 
 
 class BaseModel(Model):
     class Meta:
-        database = db
+        database = db_proxy
 
 
 class Subject(BaseModel):
