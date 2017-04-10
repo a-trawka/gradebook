@@ -2,7 +2,7 @@ from flask import flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SelectField, DecimalField, SubmitField
 from wtforms.validators import InputRequired, EqualTo, Length
-from db_model import Student, Subject
+from model import Student, Subject
 
 _ir_msg_template = '%s field is required.'
 _l_msg_template = '%s field has to be %d-%d characters long.'

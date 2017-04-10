@@ -1,15 +1,16 @@
 from peewee import *
 
-db = SqliteDatabase('gradebook.db')
+
+_db = SqliteDatabase('gradebook.db')
 
 
 def get_db():
-    return db
+    return _db
 
 
 class BaseModel(Model):
     class Meta:
-        database = db
+        database = _db
 
 
 class Subject(BaseModel):
