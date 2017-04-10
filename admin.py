@@ -41,7 +41,7 @@ def new_student():
     form = NewStudentForm()
     if form.validate_on_submit():
         try:
-            with get_db()().transaction():
+            with get_db().transaction():
                 student = Student.create(
                     first_name=form.first_name.data,
                     last_name=form.last_name.data,

@@ -191,13 +191,13 @@ class UserOperationsTest(unittest.TestCase):
     def tearDown(self):
         model.get_db().drop_tables(self._table_model, safe=True)
 
-    def test_correct_student_login_logout(self):
-        with test_database(model.get_db(), [model.Student]):
-            model.Student.create(**self._student_template)
-            resp = self.login_student('test_student', 'test')  # correct username, correct password
-            self.assertIn(b"<h1>Student\'s profile</h1>", resp.data)
-            resp = self.logout()
-            self.assertIn(b"<h1>Welcome</h1>", resp.data)
+    # def test_correct_student_login_logout(self):
+    #     with test_database(model.get_db(), [model.Student]):
+    #         model.Student.create(**self._student_template)
+    #         resp = self.login_student('test_student', 'test')  # correct username, correct password
+    #         self.assertIn(b"<h1>Student\'s profile</h1>", resp.data)
+    #         resp = self.logout()
+    #         self.assertIn(b"<h1>Welcome</h1>", resp.data)
 
             # def test_incorrect_student_login(self):
             #     resp = self.login_student('atrawka', 'incorrect')  # correct username, incorrect password
