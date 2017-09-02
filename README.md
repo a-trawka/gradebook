@@ -1,2 +1,2 @@
 # gradebook
-Goal: learn backend development with Python
+Student-Teacher management web application
